@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Load data from a Mapbox Tileset</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        .map-overlay {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: white;
+            padding: 10px;
+            border-radius: 3px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+            text-align: center;
+        }
+        .map-overlay h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .map-overlay h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .map-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: white;
+            padding: 10px;
+            border-radius: 3px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+        }
+        .map-controls button, .map-controls .info-text {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 400; /* Regular */
+        }
+
+        .map-controls .info-text {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+        /* Estilo para el contenido del popup */
+        .mapboxgl-popup-content {
+            font-family: 'Montserrat', sans-serif; /* Fuente Montserrat para el contenido */
+            font-weight: 400; /* Regular para el contenido */
+        }
+        /* Estilo para el filtro y el botón de descarga */
+        .map-filter {
+            margin-bottom: 10px;
+        }
+        .map-filter label {
+            margin-right: 10px;
+        }
+        .map-filter select {
+            padding: 5px;
+        }
+        .map-controls input[type="checkbox"] {
+            margin-right: 10px; /* Espacio a la derecha del checkbox */
+        }
+        .map-controls button {
+            display: block;
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: #0074D9;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif; /* Fuente Montserrat para el botón */
+            font-weight: 400; /* Regular para el botón */
+        }
+        .map-controls button:hover {
+            background-color: #0056b3;
+        }
+        .map-controls .info-text {
+            display: block; /* Asegura que el texto esté en su propia línea */
+            margin-top: 10px; /* Espacio encima del texto */
+            margin-left: 0; /* Elimina el margen izquierdo que se añadió antes */
+            font-family: 'Montserrat', sans-serif; /* Fuente Montserrat para el texto */
+            font-weight: 400; /* Regular para el texto */
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="map-overlay">
+        <h1>MAPBOX Ejercicio 1</h1>
+        <h2>Inmuebles en venta</h2>
+    </div>
+    
+    <div class="map-controls">
+        <input type="checkbox" id="toggle-geojson" checked>
+        <label for="toggle-geojson">Mostrar inmuebles residenciales en venta</label>
+        
+        <!-- Botón de descarga -->
+        <span class="info-text">Descarga los datos visibles en la ventana en formato GeoJSON.</span>
+        <button id="download-button">Descargar</button>
+    </div>
+    
+    <div id="map"></div>
+
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoicGFjby1zb2xzb25hIiwiYSI6ImNseWczNG1tbTA1eGIyanBudTZocnlncmwifQ.S2cqYETyR3u-5PBEy0-AsQ';
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/paco-solsona/clysujpvt003w01pahhejgddq',
+            projection: 'globe',
+            zoom: 9,
+            center: [-99.1543, 19.2788]
+        });
+
+        map.on('style.load', () => {
+            map.setFog({});
+        });
+
+        map.on('load', () => {
+            map.addSource('tileset-source', {
+                type: 'vector',
+                url: 'mapbox://paco-solsona.76zy40ks' // Tileset ID
+            });
+
+            map.addLayer({
+                id: 'tileset-layer',
+                type: 'circle',
+                source: 'tileset-source',
+                'source-layer': 'IINM_RESIDENCIALES_VENTA-3dw8zx', // Nombre de la capa dentro del tileset
+                paint: {
+                    'circle-radius': 3,
+                    'circle-color': 'black'
+                }
+            });
+
+            map.on('click', 'tileset-layer', (e) => {
+                const coordinates = e.features[0].geometry.coordinates.slice();
+                const properties = e.features[0].properties;
+                
+                // Redondear valores a un decimal
+                const precio_m2_construido = parseFloat(properties.pm2_c).toFixed(1);
+                const precio_m2_total = parseFloat(properties.pm2_t).toFixed(1);
+                
+                const description = `
+                    <strong>${properties.Titulo}</strong><br>
+                    Municipio: ${properties.NOMGEO}<br>
+                    Precio (MXN): ${properties.Precio}<br>
+                    Superficie construida (m²): ${properties.Sup_Cons}<br>
+                    Superficie total (m²): ${properties.Sup_Tot}<br>
+                    Precio m² construido: ${properties.pm2_c.toFixed(1)}<br>
+                    Precio m² total: ${properties.pm2_t.toFixed(1)}<br>
+                    Pisos: ${properties.Pisos}<br>
+                    Cuartos: ${properties.Cuartos}<br>
+                    Edad: ${properties.Edad}<br>
+                    Baños: ${properties.Baños}<br>
+                    Estacionamiento: ${properties.Estacionam}
+                `;
+
+                new mapboxgl.Popup()
+                    .setLngLat(coordinates)
+                    .setHTML(description)
+                    .addTo(map);
+            });
+
+            map.on('mouseenter', 'tileset-layer', () => {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+
+            map.on('mouseleave', 'tileset-layer', () => {
+                map.getCanvas().style.cursor = '';
+            });
+
+            // Control para mostrar/ocultar la capa
+            const toggleControl = document.getElementById('toggle-geojson');
+            toggleControl.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    map.setLayoutProperty('tileset-layer', 'visibility', 'visible');
+                } else {
+                    map.setLayoutProperty('tileset-layer', 'visibility', 'none');
+                }
+            });
+            // Descargar GeoJSON
+            document.getElementById('download-button').addEventListener('click', () => {
+                const features = map.querySourceFeatures('tileset-source', {
+                    sourceLayer: 'IINM_RESIDENCIALES_VENTA-3dw8zx'
+                });
+                
+                const geojson = {
+                    type: 'FeatureCollection',
+                    features: features
+                };
+                
+                const blob = new Blob([JSON.stringify(geojson, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'residencial_venta.geojson';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            });
+        });
+    </script>
+</body>
+</html>
