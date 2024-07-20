@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Load data from a Mapbox Tileset</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background-color: white;
+            text-align: center;
+            padding: 10px 0;
+            z-index: 2;
+        }
+        
+        .footer a {
+            text-decoration: none;
+            color: #0074D9;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400;
+        }
+        .map-overlay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: white;
+            padding: 10px;
+            border-radius: 3px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+            width: 500px; /* Ajusta el ancho del recuadro según tus necesidades */
+            font-family: 'Montserrat', sans-serif;
+        }
+        .map-overlay h1 {
+            margin: 0;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .map-overlay h2 {
+            margin: 0;
+            font-size: 18px;
+            margin-bottom: 10px; /* Espacio entre h2 y el siguiente elemento */
+        }
+
+        .map-controls {
+            margin-top: 20px;
+        }
+        .map-controls button, .map-controls .info-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400; /* Regular */
+        }
+        .map-overlay .info-text {
+            display: block;
+            margin-bottom: 10px; /* Espacio debajo del texto */
+            font-size: 14px;
+            color: #333;
+        }
+        .mapboxgl-popup-content {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400; /* Regular */
+        }
+        .map-filter {
+            margin-bottom: 10px;
+        }
+        .map-filter label {
+            margin-right: 10px;
+        }
+        .map-filter select {
+            padding: 5px;
+        }
+        .map-controls input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        .map-controls button {
+            display: block;
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: #0074D9;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400;
+            margin-bottom: 10px; /* Espacio debajo del botón */
+        }
+        .map-controls button:hover {
+            background-color: #0056b3;
+        }
+        
+        .geocoder-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1;
+            background-color: white;
+            padding: 10px;
+            border-radius: 3px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            font-family: 'Montserrat', sans-serif;
+        }
+        .geocoder-container > * {
+            margin-bottom: 10px;
+            margin-top: 10px;/* Espacio entre los elementos */
+        }
+    </style>
+</head>
+<body>
+    <div class="map-overlay">
+        
+        <h1>Inmuebles residenciales en venta</h1>
+        <h2>En la ZMVM y alrededores</h2>
+        <span class="info-text">Descarga los datos visibles en la ventana en formato GeoJSON.</span>
+        <button id="download-button">Descargar los datos visibles</button>
+        
+    </div>
+    <div class="geocoder-container" id="geocoder">
+        <input type="checkbox" id="toggle-geojson" checked>
+        <label for="toggle-geojson">Mostrar inmuebles residenciales en venta</label>
+    </div>
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
+    
+    <div id="map"></div>
+    
+    <footer class="footer">
+        <a href="http://www.geo-data-urbana.com">Geo Data Urbana</a>
+    </footer>
+    
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoicGFjby1zb2xzb25hIiwiYSI6ImNseWczNG1tbTA1eGIyanBudTZocnlncmwifQ.S2cqYETyR3u-5PBEy0-AsQ';
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/paco-solsona/clysujpvt003w01pahhejgddq',
+            projection: 'globe',
+            zoom: 9,
+            center: [-99.1543, 19.2788]
+        });
+
+        map.on('style.load', () => {
+            map.setFog({});
+        });
+
+        map.on('load', () => {
+            map.addSource('tileset-source', {
+                type: 'vector',
+                url: 'mapbox://paco-solsona.76zy40ks'
+            });
+
+            map.addLayer({
+                id: 'tileset-layer',
+                type: 'circle',
+                source: 'tileset-source',
+                'source-layer': 'IINM_RESIDENCIALES_VENTA-3dw8zx',
+                paint: {
+                    'circle-radius': 3,
+                    'circle-color': 'black'
+                }
+            });
+
+            map.on('click', 'tileset-layer', (e) => {
+                const coordinates = e.features[0].geometry.coordinates.slice();
+                const properties = e.features[0].properties;
+                
+                const precio_m2_construido = parseFloat(properties.pm2_c).toFixed(1);
+                const precio_m2_total = parseFloat(properties.pm2_t).toFixed(1);
+                
+                const description = `
+                    <strong>${properties.Titulo}</strong><br>
+                    Municipio: ${properties.NOMGEO}<br>
+                    Precio (MXN): ${properties.Precio}<br>
+                    Superficie construida (m²): ${properties.Sup_Cons}<br>
+                    Superficie total (m²): ${properties.Sup_Tot}<br>
+                    Precio m² construido: ${precio_m2_construido}<br>
+                    Precio m² total: ${precio_m2_total}<br>
+                    Pisos: ${properties.Pisos}<br>
+                    Cuartos: ${properties.Cuartos}<br>
+                    Edad: ${properties.Edad}<br>
+                    Baños: ${properties.Baños}<br>
+                    Estacionamiento: ${properties.Estacionam}
+                `;
+
+                new mapboxgl.Popup()
+                    .setLngLat(coordinates)
+                    .setHTML(description)
+                    .addTo(map);
+            });
+
+            map.on('mouseenter', 'tileset-layer', () => {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+
+            map.on('mouseleave', 'tileset-layer', () => {
+                map.getCanvas().style.cursor = '';
+            });
+
+            const toggleControl = document.getElementById('toggle-geojson');
+            toggleControl.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    map.setLayoutProperty('tileset-layer', 'visibility', 'visible');
+                } else {
+                    map.setLayoutProperty('tileset-layer', 'visibility', 'none');
+                }
+            });
+
+            document.getElementById('download-button').addEventListener('click', () => {
+                const features = map.querySourceFeatures('tileset-source', {
+                    sourceLayer: 'IINM_RESIDENCIALES_VENTA-3dw8zx'
+                });
+                
+                const geojson = {
+                    type: 'FeatureCollection',
+                    features: features
+                };
+                
+                const blob = new Blob([JSON.stringify(geojson, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'residencial_venta.geojson';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            });
+        });
+
+        const geocoder = new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken,
+            mapboxgl: mapboxgl
+        });
+
+        document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
+    </script>
+</body>
+</html>
+
+
+
