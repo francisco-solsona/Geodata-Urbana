@@ -10,22 +10,6 @@
     <style>
         body { margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; } /* Estilos básicos del cuerpo */
         #map { position: absolute; top: 0; bottom: 0; width: 100%; } /* Estilos para el mapa ocupando toda la pantalla */
-        .footer {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            background-color: white;
-            text-align: center;
-            padding: 10px 0;
-            z-index: 2;
-        } /* Estilos para el pie de página */
-        
-        .footer a { 
-            text-decoration: none;
-            color: #0074D9;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 400;
-        } /* Estilos para el enlace en el pie de página */
         
         .description {
             font-family: 'Montserrat', sans-serif; /* Asignamos la fuente del texto */
@@ -258,6 +242,11 @@
                     .setLngLat(coordinates)
                     .setHTML(description)
                     .addTo(map);
+                
+                map.flyTo({
+                    center: coordinates,
+                    zoom: 13
+                });
             }); /*   */
 
             map.on('mouseenter', 'tileset-layer', () => {
