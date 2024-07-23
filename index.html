@@ -177,7 +177,7 @@
         <a href="http://www.geo-data-urbana.com">Geodata Urbana</a>
         
     </footer>
-    
+    <script src="https://unpkg.com/@turf/turf/turf.min.js"></script> <!-- Agregar Turf.js -->
     <script>
         mapboxgl.accessToken = 'pk.eyJ1IjoicGFjby1zb2xzb25hIiwiYSI6ImNseWczNG1tbTA1eGIyanBudTZocnlncmwifQ.S2cqYETyR3u-5PBEy0-AsQ';
         const map = new mapboxgl.Map({
@@ -193,6 +193,25 @@
         });
 
         map.on('load', () => {
+            
+            map.addSource('escuelas', {
+                type: 'vector',
+                url: 'mapbox://paco-solsona.by3ibyef' // Coloca aquí la URL de tu GeoJSON de escuelas
+            });
+            
+            map.addLayer({
+                id: 'escuelas-layer',
+                type: 'circle',
+                source: 'escuelas',
+                'source-layer': 'ServiciosEducativos-7u82ox',
+                
+                paint: {
+                    'circle-radius': 0,
+                    'circle-color': 'blue'
+                }
+            });
+            /* */
+            
             map.addSource('tileset-source', {
                 type: 'vector',
                 url: 'mapbox://paco-solsona.76zy40ks'
@@ -208,54 +227,91 @@
                     'circle-color': 'black'
                 }
             });
+            /*  */
 
             map.on('click', 'tileset-layer', (e) => {
                 const coordinates = e.features[0].geometry.coordinates.slice();
-                const properties = e.features[0].properties;              
-                
-                // Función para formatear números con comas
+                const properties = e.features[0].properties;
+
                 const formatNumber = (number) => {
                     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 };
-                
-                // Formatear el precio
+
                 const precio_formateado = formatNumber(properties.Precio || '0');
                 const precio_m2_construido = formatNumber(isNaN(parseFloat(properties.pm2_c)) ? '0' : parseFloat(properties.pm2_c).toFixed(1));
                 const precio_m2_total = formatNumber(isNaN(parseFloat(properties.pm2_t)) ? '0' : parseFloat(properties.pm2_t).toFixed(1));
-                
-                const description = `
-                    <strong>${properties.Titulo}</strong><br>
-                    Municipio: ${properties.NOMGEO}<br>
-                    Precio (MXN): ${precio_formateado}<br>
-                    Superficie construida (m²): ${properties.Sup_Cons}<br>
-                    Superficie total (m²): ${properties.Sup_Tot}<br>
-                    Precio m² construido: ${precio_m2_construido}<br>
-                    Precio m² total: ${precio_m2_total}<br>
-                    Pisos: ${properties.Pisos}<br>
-                    Cuartos: ${properties.Cuartos}<br>
-                    Edad: ${properties.Edad}<br>
-                    Baños: ${properties.Baños}<br>
-                    Estacionamiento: ${properties.Estacionam}
-                `;  /*   */
 
-                new mapboxgl.Popup()
-                    .setLngLat(coordinates)
-                    .setHTML(description)
-                    .addTo(map);
-                
-                map.flyTo({
-                    center: coordinates,
-                    zoom: 13
-                });
-            }); /*   */
+                if (map.getLayer('isochrone-layer')) {
+                    map.removeLayer('isochrone-layer');
+                    map.removeSource('isochrone-source');
+                }
+
+                const isochroneUrl = `https://api.mapbox.com/isochrone/v1/mapbox/walking/${coordinates[0]},${coordinates[1]}?contours_meters=1000&polygons=true&access_token=${mapboxgl.accessToken}`;
+
+                fetch(isochroneUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        map.addSource('isochrone-source', {
+                            type: 'geojson',
+                            data: data
+                        });
+
+                        map.addLayer({
+                            id: 'isochrone-layer',
+                            type: 'fill',
+                            source: 'isochrone-source',
+                            layout: {},
+                            paint: {
+                                'fill-color': '#888888',
+                                'fill-opacity': 0.5
+                            }
+                        });
+
+                        // Asegúrate de que la capa 'escuelas' está visible antes de contar
+                        const isocronaGeometry = data.features[0].geometry;
+
+                        // Esperar a que la capa 'escuelas' esté cargada
+                        map.once('idle', () => {
+                            const schoolsCount = map.queryRenderedFeatures({
+                                layers: ['escuelas-layer']
+                            }).filter(feature => turf.booleanContains(isocronaGeometry, feature.geometry)).length;
+
+                            const updatedDescription = `
+                                <strong>${properties.Titulo}</strong><br>
+                                Municipio: ${properties.NOMGEO}<br>
+                                Precio (MXN): ${precio_formateado}<br>
+                                Superficie construida (m²): ${properties.Sup_Cons}<br>
+                                Superficie total (m²): ${properties.Sup_Tot}<br>
+                                Precio m² construido: ${precio_m2_construido}<br>
+                                Precio m² total: ${precio_m2_total}<br>
+                                Pisos: ${properties.Pisos}<br>
+                                Cuartos: ${properties.Cuartos}<br>
+                                Edad: ${properties.Edad}<br>
+                                Baños: ${properties.Baños}<br>
+                                Estacionamiento: ${properties.Estacionam}<br>
+                                Escuelas a 1 Km: ${schoolsCount}
+                            `;
+
+                            new mapboxgl.Popup()
+                                .setLngLat(coordinates)
+                                .setHTML(updatedDescription)
+                                .addTo(map);
+
+                            map.flyTo({
+                                center: coordinates,
+                                zoom: 14
+                            });
+                        });
+                    });
+            });
 
             map.on('mouseenter', 'tileset-layer', () => {
                 map.getCanvas().style.cursor = 'pointer';
-            }); /*   */
+            });
 
             map.on('mouseleave', 'tileset-layer', () => {
                 map.getCanvas().style.cursor = '';
-            }); /*   */
+            });
 
             const toggleControl = document.getElementById('toggle-geojson');
             toggleControl.addEventListener('change', (e) => {
@@ -264,18 +320,18 @@
                 } else {
                     map.setLayoutProperty('tileset-layer', 'visibility', 'none');
                 }
-            }); /*   */
+            });
 
             document.getElementById('download-button').addEventListener('click', () => {
                 const features = map.querySourceFeatures('tileset-source', {
                     sourceLayer: 'IINM_RESIDENCIALES_VENTA-3dw8zx'
-                }); /*   */
-                 
+                });
+
                 const geojson = {
                     type: 'FeatureCollection',
                     features: features
-                }; /*   */
-                
+                };
+
                 const blob = new Blob([JSON.stringify(geojson, null, 2)], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
