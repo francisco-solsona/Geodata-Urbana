@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"> <!-- Define el conjunto de caracteres -->
     <title>Geodata Urbana - Inmuebles residenciales</title> <!-- Título de la página -->
-    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=yes"> <!-- Configura la vista para dispositivos móviles -->
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no"> <!-- Configura la vista para dispositivos móviles -->
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css" rel="stylesheet"> <!-- Incluye el CSS de Mapbox -->
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js"></script> <!-- Incluye el JS de Mapbox -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet"> <!-- Incluye la fuente Montserrat -->
@@ -228,6 +228,23 @@
                 }
             });
             /*  */
+            
+            map.addSource('salud', {
+                type: 'vector',
+                url: 'mapbox://paco-solsona.ae3pdjj8' // Coloca aquí la URL de tu GeoJSON de escuelas
+            });
+            
+            map.addLayer({
+                id: 'salud-layer',
+                type: 'circle',
+                source: 'salud',
+                'source-layer': 'AsistenciaSocial-3goidw',
+                paint: {
+                    'circle-radius': 0,
+                    'circle-color': 'red'
+                }
+            });
+            /* */
 
             map.on('click', 'tileset-layer', (e) => {
                 const coordinates = e.features[0].geometry.coordinates.slice();
@@ -263,19 +280,90 @@
                             layout: {},
                             paint: {
                                 'fill-color': '#888888',
-                                'fill-opacity': 0.5
+                                'fill-opacity': 0.3
                             }
                         });
-
+                    
+                        
+                    
                         // Asegúrate de que la capa 'escuelas' está visible antes de contar
                         const isocronaGeometry = data.features[0].geometry;
 
                         // Esperar a que la capa 'escuelas' esté cargada
                         map.once('idle', () => {
+                            const allSchools = map.querySourceFeatures('escuelas', {
+                                sourceLayer: 'ServiciosEducativos-7u82ox'
+                            });
+                            
+                            const schoolsInsideIsochrone = allSchools.filter(feature => turf.booleanContains(isocronaGeometry, feature.geometry));
+                            
+                             // Crear un nuevo GeoJSON con las escuelas dentro de la isocrona
+                            const filteredSchoolsGeoJSON = {
+                                type: 'FeatureCollection',
+                                features: schoolsInsideIsochrone
+                            };      
+                            
+                            if (map.getSource('filtered-schools')) {
+                                map.getSource('filtered-schools').setData(filteredSchoolsGeoJSON);
+                            } else {
+                                map.addSource('filtered-schools', {
+                                    type: 'geojson',
+                                    data: filteredSchoolsGeoJSON
+                                });
+
+                                map.addLayer({
+                                    id: 'filtered-schools-layer',
+                                    type: 'circle',
+                                    source: 'filtered-schools',
+                                    paint: {
+                                        'circle-radius': 3,
+                                        'circle-color': '#144afc'
+                                    }
+                                });
+                            }
+                            
+                            
+                            //////////
+                            
+                            const allSalud = map.querySourceFeatures('salud', {
+                                sourceLayer: 'AsistenciaSocial-3goidw'
+                            });
+                            
+                            const saludInsideIsochrone = allSalud.filter(feature => turf.booleanContains(isocronaGeometry, feature.geometry));
+                            
+                             // Crear un nuevo GeoJSON con las escuelas dentro de la isocrona
+                            const filteredSaludGeoJSON = {
+                                type: 'FeatureCollection',
+                                features: saludInsideIsochrone
+                            };      
+                            
+                            if (map.getSource('filtered-salud')) {
+                                map.getSource('filtered-salud').setData(filteredSaludGeoJSON);
+                            } else {
+                                map.addSource('filtered-salud', {
+                                    type: 'geojson',
+                                    data: filteredSaludGeoJSON
+                                });
+
+                                map.addLayer({
+                                    id: 'filtered-salud-layer',
+                                    type: 'circle',
+                                    source: 'filtered-salud',
+                                    paint: {
+                                        'circle-radius': 3,
+                                        'circle-color': '#b00b1e'
+                                    }
+                                });
+                            }
+                            
+                            
                             const schoolsCount = map.queryRenderedFeatures({
                                 layers: ['escuelas-layer']
                             }).filter(feature => turf.booleanContains(isocronaGeometry, feature.geometry)).length;
-
+                            const saludCount = map.queryRenderedFeatures({
+                                layers: ['salud-layer']
+                            }).filter(feature => turf.booleanContains(isocronaGeometry, feature.geometry)).length;
+                            
                             const updatedDescription = `
                                 <strong>${properties.Titulo}</strong><br>
                                 Municipio: ${properties.NOMGEO}<br>
@@ -285,23 +373,25 @@
                                 Precio m² construido: ${precio_m2_construido}<br>
                                 Precio m² total: ${precio_m2_total}<br>
                                 Pisos: ${properties.Pisos}<br>
-                                Cuartos: ${properties.Cuartos}<br>
+                                Cuartos: ${properties.Cuartos}<br> 
                                 Edad: ${properties.Edad}<br>
                                 Baños: ${properties.Baños}<br>
                                 Estacionamiento: ${properties.Estacionam}<br>
-                                Escuelas a 1 Km: ${schoolsCount}
+                                <strong style="color: #144afc;">Escuelas a 1 Km: ${schoolsCount}<br>
+                                <strong style="color: #b00b1e;">Servicios de salud a 1 Km: ${saludCount}
                             `;
 
                             new mapboxgl.Popup()
                                 .setLngLat(coordinates)
                                 .setHTML(updatedDescription)
                                 .addTo(map);
-
                             map.flyTo({
                                 center: coordinates,
                                 zoom: 14
                             });
+                            
                         });
+                    
                     });
             });
 
@@ -352,6 +442,3 @@
     </script>
 </body>
 </html>
-
-
-
