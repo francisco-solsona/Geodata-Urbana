@@ -330,6 +330,35 @@
                 const coordinates = e.features[0].geometry.coordinates.slice();
                 const properties = e.features[0].properties;
 
+                // Eliminar cualquier punto seleccionado previamente
+                if (map.getLayer('selected-point-layer')) {
+                    map.removeLayer('selected-point-layer');
+                    map.removeSource('selected-point-source');
+                }
+
+                // Agregar una nueva fuente y capa para el punto seleccionado
+                map.addSource('selected-point-source', {
+                    type: 'geojson',
+                    data: {
+                        type: 'Feature',
+                        geometry: {
+                            type: 'Point',
+                            coordinates: coordinates
+                        },
+                        properties: {}
+                    }
+                });
+
+                map.addLayer({
+                    id: 'selected-point-layer',
+                    type: 'circle',
+                    source: 'selected-point-source',
+                    paint: {
+                        'circle-radius': 10, // Tamaño más grande
+                        'circle-color': '#00ffff' // Color rojo
+                    }
+                });
+                
                 const formatNumber = (number) => {
                     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 };
@@ -374,7 +403,17 @@
                                 'line-width': 4
                             }
                         });
+                        
                     
+                        // Aquí es donde se hace el ajuste del zoom a la capa de isocrona
+                        const bounds = new mapboxgl.LngLatBounds();
+                        data.features[0].geometry.coordinates[0].forEach(coord => {
+                            bounds.extend(coord);
+                        });
+                        map.fitBounds(bounds, {
+                            padding: 20
+                        });
+                        
                         const isocronaGeometry = data.features[0].geometry;
 
                         // Esperar a que la capa 'escuelas' esté cargada
@@ -398,7 +437,7 @@
                                     source: 'filtered-abarrotes',
                                     paint: {
                                         'circle-radius': 6,
-                                        'circle-color': '#FBFF00'
+                                        'circle-color': '#ffd907'
                                     }
                                 });
                             }
@@ -444,7 +483,7 @@
                                     source: 'filtered-salud',
                                     paint: {
                                         'circle-radius': 6,
-                                        'circle-color': '#b00b1e'
+                                        'circle-color': '#f50000'
                                     }
                                 });
                             }
@@ -508,8 +547,8 @@
                                             Baños: ${properties.Baños}<br>
                                             Estacionamiento: ${properties.Estacionam}<br>
                                             <strong style="color: #144afc;">Escuelas a 1 Km: ${schoolsCount}</strong><br>
-                                            <strong style="color: #b00b1e;">Servicios de salud a 1 Km: ${saludCount}</strong><br>
-                                            <strong style="color: #FBFF00;">Abarrotes a 1 Km: ${abarrotesCount}</strong>
+                                            <strong style="color: #f50000;">Servicios de salud a 1 Km: ${saludCount}</strong><br>
+                                            <strong style="color: #ffd907;">Abarrotes a 1 Km: ${abarrotesCount}</strong>
                                         </div>
                                     </div>
                                 `;
@@ -518,10 +557,7 @@
                                     .setLngLat(coordinates)
                                     .setHTML(updatedDescription)
                                     .addTo(map);
-                                map.flyTo({
-                                    center: coordinates,
-                                    zoom: 15
-                                });
+
                             });
                             
                         });
