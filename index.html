@@ -98,6 +98,7 @@
             background-color: #0074D9; /* Color de fondo */
             color: white; /* Color del texto */
             cursor: pointer; /* Cursor al pasar sobre el botón */
+            width: 100%;
         }
 
         #download-button:hover {
@@ -204,15 +205,23 @@
 
         
         .tabs {
-            display: flex;
-            margin-bottom: 10px;
+            display: flex; /* Usar flexbox para la disposición */
+            flex-wrap: wrap; /* Permitir que los botones se envuelvan en múltiples filas */
+            justify-content: space-between; /* Espacio entre los botones */
+            padding: 0px; /* Espaciado alrededor de la barra de pestañas */
+            width: 100%; /* Asegura que ocupe todo el ancho del contenedor */
         }
 
         .tab-button {
-            background-color: #f1f1f1;
-            border: none;
-            padding: 10px 20px;
+            flex: 1; /* Hacer que cada botón tome el mismo ancho */
+            margin: 1px; /* Espaciado entre los botones */
+            padding: 0px; /* Espaciado interno del botón */
             cursor: pointer;
+            border: 1px solid #ccc; /* Borde del botón */
+            background-color: #f1f1f1; /* Color de fondo del botón */
+            font-size: 14px; /* Tamaño de fuente */
+            text-align: center; /* Centra el texto en el botón */
+            box-sizing: border-box; /* Incluye padding en el tamaño total */
             font-family: 'Montserrat', sans-serif;
         }
 
@@ -244,10 +253,6 @@
             <label for="toggle-geojson">Mostrar puntos</label> <!-- Etiqueta para el checkbox -->  
             <input type="checkbox" id="toggle-geojson" checked> <!-- Checkbox para mostrar/ocultar la capa GeoJSON -->
         </div>
-        <div class="info-download-container" id ="info">
-            <button id="download-button">Descargar GeoJSON</button> <!-- Botón para descargar datos -->
-        </div>
-        
         
     </div>
     
@@ -256,13 +261,14 @@
     <div class="info-container">
         
         <h1>Inmuebles residenciales en venta</h1> <!-- Título principal del recuadro -->
-        <h2>Zona Metropolitana del Valle de México y alrededores</h2>  <!-- Subtítulo del recuadro -->
+        <h3>Zona Metropolitana del Valle de México y alrededores</h3>  <!-- Subtítulo del recuadro -->
         
          <!-- Barra de pestañas -->
         <div class="tabs">
-            <button class="tab-button" onclick="showTab('description')">Descripción</button>
-            <button class="tab-button" onclick="showTab('property-info')">Información del inmueble</button>
+            <button class="tab-button" onclick="showTab('description')">Geodata Urbana</button>
+            <button class="tab-button" onclick="showTab('property-info')">Inmueble</button>
             <button class="tab-button" onclick="showTab('nearby-services')">Servicios cercanos</button>
+            <button class="tab-button" onclick="showTab('download')">Descargar</button>
         </div>
 
         <!-- Contenido de las pestañas -->
@@ -287,8 +293,14 @@
             <strong style="color: #144afc;">Servicios educativos: ${schoolsCount}</strong><br>
             <strong style="color: #f50000;">Servicios de salud: ${saludCount}</strong><br>
             <strong style="color: #ffd907;">Abarrotes y misceláneas: ${abarrotesCount}</strong><br>
-                <div id="table-container"></div> <!-- Contenedor para la tabla -->
         </div>
+        <div id="download" class="tab-content">
+            <p>
+                Aquí podrás descargar en formato GeoJSON los inmuebles en venta visibles en la ventana. 
+            </p>
+            <div class="info-download-container" id ="info">
+                <button id="download-button">Descargar GeoJSON</button> <!-- Botón para descargar datos -->
+            </div>
     </div>
     
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
@@ -699,6 +711,11 @@
             // Añadir este bloque de código para manejar el evento click en la pestaña "Información del inmueble"
             document.querySelector(`.tab-button[onclick="showTab('property-info')"]`).addEventListener('click', () => {
                 showTab('property-info');
+            });
+            
+            // Añadir este bloque de código para manejar el evento click en la pestaña "Información del inmueble"
+            document.querySelector(`.tab-button[onclick="showTab('download')"]`).addEventListener('click', () => {
+                showTab('download');
             });
             
             // Añadir este bloque de código para manejar el evento click en la pestaña "Servicios cercanos"
