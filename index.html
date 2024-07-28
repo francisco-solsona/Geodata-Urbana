@@ -43,8 +43,9 @@
             display: flex;
             flex-direction: column;
             align-items: flex-start;
+
         }
-        .description {
+        #description {
             font-family: 'Montserrat', sans-serif; /* Asignamos la fuente del texto */
             font-size: 14px; /* Tamaño de fuente */
             color: #333; /* Color del texto */
@@ -54,10 +55,13 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Sombra */
             margin: 10px 0; /* Margen superior e inferior */
             text-align: justify; /* Justificar el texto */
-            max-height: 50px; /* Altura inicial */
-            overflow: hidden;
+            max-height: 700px; /* Altura inicial */
+            overflow-y: auto;
+            max-width: auto;
             position: relative;
+            line-height: 1.5;
         }
+
         .description.expanded {
             max-height: none;
         }
@@ -141,7 +145,7 @@
         } /*  Estilos para los botones y texto informativo de los controles del mapa */
         
         .map-overlay .info-text {
-            margin-top: 20px;
+            margin-top: 10px;
             display: block;
             margin-bottom: 10px; /* Espacio debajo del texto */
             font-size: 14px;
@@ -192,7 +196,43 @@
             margin-top: 10px;/* Espacio entre los elementos */
             
         } /* Estilos para los elementos dentro del contenedor del geocodificador  */
+        .info-container {
+            max-height: 550px; /* Puedes ajustar la altura según tus necesidades */
+            max-width: 350px;
+            overflow-y: auto;
+        }
+
         
+        .tabs {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .tab-button {
+            background-color: #f1f1f1;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .tab-button:hover {
+            background-color: #ddd;
+        }
+
+        .tab-button.active {
+            background-color: #ccc;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
@@ -218,25 +258,37 @@
         <h1>Inmuebles residenciales en venta</h1> <!-- Título principal del recuadro -->
         <h2>Zona Metropolitana del Valle de México y alrededores</h2>  <!-- Subtítulo del recuadro -->
         
-        <div class="description">
+         <!-- Barra de pestañas -->
+        <div class="tabs">
+            <button class="tab-button" onclick="showTab('description')">Descripción</button>
+            <button class="tab-button" onclick="showTab('property-info')">Información del inmueble</button>
+            <button class="tab-button" onclick="showTab('nearby-services')">Servicios cercanos</button>
+        </div>
 
-            <button class="expand-btn">Leer más</button>      
+        <!-- Contenido de las pestañas -->
+        <div id="description" class="tab-content">
             <p>
                 La información mostrada en este mapa corresponde a <strong>inmuebles residenciales en venta</strong> recopilados 
                 de distintas páginas de promoción de inmuebles durante el primer semestre del año 2024. 
             </p>
-                El objetivo en <a href="http://www.geo-data-urbana.com"><strong>Geodata Urbana</strong></a> es crear una base de datos abiertos 
-                donde analistas espaciales o especialistas en sistemas de información geográfica puedan acceder 
-                a esta información de manera <strong>rápida y sencilla</strong> para potenciar los análisis realizados en el entorno urbano.
-            <p>
-            </p>
+            El objetivo en <a href="http://www.geo-data-urbana.com"><strong>Geodata Urbana</strong></a> es crear una base de datos abiertos 
+            donde analistas espaciales o especialistas en sistemas de información geográfica puedan acceder 
+            a esta información de manera <strong>rápida y sencilla</strong> para potenciar los análisis realizados en el entorno urbano.
+            <p></p>
             <p>
                 Esta base de datos puede ser utilizada para diversos fines, especialmente en el ámbito de la investigación y desarrollo urbano, 
                 donde se pueden realizar estudios sobre tendencias del mercado inmobiliario, análisis de accesibilidad y 
                 localización, evaluación de precios y superficies, y mucho más.
             </p>
         </div>
-
+        <div id="property-info" class="tab-content" style="display:none;"></div>
+        <div id="nearby-services" class="tab-content" style="display:none;">
+            <strong style="font-size: 14px;">Servicios a 1 Km caminando</strong><br>
+            <strong style="color: #144afc;">Servicios educativos: ${schoolsCount}</strong><br>
+            <strong style="color: #f50000;">Servicios de salud: ${saludCount}</strong><br>
+            <strong style="color: #ffd907;">Abarrotes y misceláneas: ${abarrotesCount}</strong><br>
+                <div id="table-container"></div> <!-- Contenedor para la tabla -->
+        </div>
     </div>
     
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
@@ -325,7 +377,34 @@
                 }
             });
             /* */
+            // Función para crear una tabla a partir de un conjunto de características
+            function createTable(features) {
+                const tableContainer = document.getElementById('table-container');
+                tableContainer.innerHTML = ''; // Limpiar contenido anterior
 
+                const table = document.createElement('table');
+                table.border = 1; // Puedes cambiar el estilo según tus preferencias
+
+                // Crear encabezados de la tabla
+                const headerRow = table.insertRow();
+                const headers = Object.keys(features[0].properties);
+                headers.forEach(header => {
+                    const cell = document.createElement('th');
+                    cell.textContent = header;
+                    headerRow.appendChild(cell);
+                });
+
+                // Llenar la tabla con los datos
+                features.forEach(feature => {
+                    const row = table.insertRow();
+                    headers.forEach(header => {
+                        const cell = row.insertCell();
+                        cell.textContent = feature.properties[header];
+                    });
+                });
+
+                tableContainer.appendChild(table);
+            }
             map.on('click', 'tileset-layer', (e) => {
                 const coordinates = e.features[0].geometry.coordinates.slice();
                 const properties = e.features[0].properties;
@@ -411,7 +490,7 @@
                             bounds.extend(coord);
                         });
                         map.fitBounds(bounds, {
-                            padding: 20
+                            padding: 100
                         });
                         
                         const isocronaGeometry = data.features[0].geometry;
@@ -487,6 +566,7 @@
                                     }
                                 });
                             }
+                            // Función para mostrar los servicios en la tabla                      
                             
                             map.once('idle', () => {
                                 const abarrotesCount = map.queryRenderedFeatures({
@@ -498,7 +578,12 @@
                                 const saludCount = map.queryRenderedFeatures({
                                     layers: ['salud-layer']
                                 }).filter(feature => turf.booleanContains(isocronaGeometry, feature.geometry)).length;
-                                
+                                const nearbyServicesHTML = `
+                                    <strong style="font-size: 14px;">Servicios a 1 Km caminando</strong><br>
+                                    <strong style="color: #144afc;">Servicios educativos: ${schoolsCount}</strong><br>
+                                    <strong style="color: #f50000;">Servicios de salud: ${saludCount}</strong><br>
+                                    <strong style="color: #ffd907;">Abarrotes y misceláneas: ${abarrotesCount}</strong><br>
+                                `;
 
                                 const updatedDescription = `
                                     <style>
@@ -507,18 +592,21 @@
                                             border: none;
                                             color: white;
                                             padding: 5px 10px;
-                                            text-align: center;
+                                            text-align: jusitfy;
                                             text-decoration: none;
                                             display: inline-block;
-                                            font-size: 12px;
+                                            font-size: 14px;
                                             margin: 0px 10px;
                                             cursor: pointer;
                                             border-radius: 5px;
+                                            
                                         }
                                         .popup-content {
                                             font-family: 'Montserrat', sans-serif;
-                                            font-size: 12px;
+                                            font-size: 14px;
                                             color: #333;
+                                            line-height: 1.5; /* Espaciado entre filas */
+                                            text-align: jusitfy;
                                         }
                                         .popup-header {
                                             display: flex;
@@ -546,27 +634,35 @@
                                             Edad: ${properties.Edad}<br>
                                             Baños: ${properties.Baños}<br>
                                             Estacionamiento: ${properties.Estacionam}<br>
-                                            <strong style="font-size: 14px;"> Servicios a 1 Km caminando</strong><br>
-                                            <strong style="color: #144afc;">Servicios educativos: ${schoolsCount}</strong><br>
-                                            <strong style="color: #f50000;">Servicios de salud: ${saludCount}</strong><br>
-                                            <strong style="color: #ffd907;">Abarrotes y misceláneas: ${abarrotesCount}</strong><br>
+                                        
                                             
                                         </div>
+
+
                                     </div>
                                 `;
-
-                                new mapboxgl.Popup()
-                                    .setLngLat(coordinates)
-                                    .setHTML(updatedDescription)
-                                    .addTo(map);
+                                
+                                // Actualizar el contenido de la pestaña "Información del inmueble"
+                                const propertyInfoContainer = document.getElementById('property-info');
+                                propertyInfoContainer.innerHTML = updatedDescription;
+                                // Asegurarse de que el contenido ocupe el ancho completo del contenedor
+                                propertyInfoContainer.style.width = '100%';
+                                propertyInfoContainer.style.boxSizing = 'border-box';
+                                // Asegurarse de que la pestaña correcta esté visible
+                                showTab('property-info');
+                                 
+                                
+                          
 
                             });
+                            
                             
                         });
                     
                     });
+                
             });
-
+            
             map.on('mouseenter', 'tileset-layer', () => {
                 map.getCanvas().style.cursor = 'pointer';
             });
@@ -582,6 +678,46 @@
                 } else {
                     map.setLayoutProperty('tileset-layer', 'visibility', 'none');
                 }
+            });
+            function showTab(tabName) {
+                // Ocultar todas las pestañas y quitar la clase active de los botones
+                const tabs = document.querySelectorAll('.tab-content');
+                tabs.forEach(tab => tab.style.display = 'none');
+                const buttons = document.querySelectorAll('.tab-button');
+                buttons.forEach(button => button.classList.remove('active'));
+
+                // Mostrar la pestaña seleccionada y añadir la clase active al botón correspondiente
+                document.getElementById(tabName).style.display = 'block';
+                document.querySelector(`.tab-button[onclick="showTab('${tabName}')"]`).classList.add('active');
+            }
+            
+            // Añadir este bloque de código para manejar el evento click en la pestaña "Descripción"
+            document.querySelector(`.tab-button[onclick="showTab('description')"]`).addEventListener('click', () => {
+                showTab('description');
+            });
+
+            // Añadir este bloque de código para manejar el evento click en la pestaña "Información del inmueble"
+            document.querySelector(`.tab-button[onclick="showTab('property-info')"]`).addEventListener('click', () => {
+                showTab('property-info');
+            });
+            
+            // Añadir este bloque de código para manejar el evento click en la pestaña "Servicios cercanos"
+            document.querySelector(`.tab-button[onclick="showTab('nearby-services')"]`).addEventListener('click', () => {
+                // Calcular los conteos de servicios a partir de la isocrona
+                const abarrotesCount = map.querySourceFeatures('filtered-abarrotes', {}).length;
+                const schoolsCount = map.querySourceFeatures('filtered-schools', {}).length;
+                const saludCount = map.querySourceFeatures('filtered-salud', {}).length;
+
+                // Actualizar el conteo de servicios cuando se hace clic en la pestaña
+                const nearbyServicesHTML = `
+                    <strong style="font-size: 14px;line-height: 1.5;">Servicios a 1 Km caminando</strong><br>
+                    <strong style="color: #144afc;line-height: 1.5;">Servicios educativos: ${schoolsCount}</strong><br>
+                    <strong style="color: #f50000;line-height: 1.5;">Servicios de salud: ${saludCount}</strong><br>
+                    <strong style="color: #ffd907;line-height: 1.5;">Abarrotes y misceláneas: ${abarrotesCount}</strong><br>
+                `;
+                document.getElementById('nearby-services').innerHTML = nearbyServicesHTML;
+
+                showTab('nearby-services');
             });
             
             document.addEventListener('DOMContentLoaded', (event) => {
