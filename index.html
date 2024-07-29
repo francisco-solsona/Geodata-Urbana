@@ -193,8 +193,8 @@
         } /*  Estilos para el contenedor del geocodificador */
         
         .geocoder-container > * {
-            margin-bottom: 10px;
-            margin-top: 10px;/* Espacio entre los elementos */
+            margin-bottom: 5px;
+            margin-top: 5px;/* Espacio entre los elementos */
             
         } /* Estilos para los elementos dentro del contenedor del geocodificador  */
         .info-container {
@@ -242,6 +242,12 @@
             width: 100%;
             box-sizing: border-box;
         }
+        #nearby-services strong {
+            display: block;
+            margin-top: 20px;
+        }
+
+        
     </style>
 </head>
 <body>
@@ -389,34 +395,10 @@
                 }
             });
             /* */
-            // Función para crear una tabla a partir de un conjunto de características
-            function createTable(features) {
-                const tableContainer = document.getElementById('table-container');
-                tableContainer.innerHTML = ''; // Limpiar contenido anterior
-
-                const table = document.createElement('table');
-                table.border = 1; // Puedes cambiar el estilo según tus preferencias
-
-                // Crear encabezados de la tabla
-                const headerRow = table.insertRow();
-                const headers = Object.keys(features[0].properties);
-                headers.forEach(header => {
-                    const cell = document.createElement('th');
-                    cell.textContent = header;
-                    headerRow.appendChild(cell);
-                });
-
-                // Llenar la tabla con los datos
-                features.forEach(feature => {
-                    const row = table.insertRow();
-                    headers.forEach(header => {
-                        const cell = row.insertCell();
-                        cell.textContent = feature.properties[header];
-                    });
-                });
-
-                tableContainer.appendChild(table);
-            }
+            
+            
+            
+            
             map.on('click', 'tileset-layer', (e) => {
                 const coordinates = e.features[0].geometry.coordinates.slice();
                 const properties = e.features[0].properties;
@@ -527,7 +509,7 @@
                                     type: 'circle',
                                     source: 'filtered-abarrotes',
                                     paint: {
-                                        'circle-radius': 6,
+                                        'circle-radius': 4,
                                         'circle-color': '#ffd907'
                                     }
                                 });
@@ -551,7 +533,7 @@
                                     type: 'circle',
                                     source: 'filtered-schools',
                                     paint: {
-                                        'circle-radius': 6,
+                                        'circle-radius': 4,
                                         'circle-color': '#144afc'
                                     }
                                 });
@@ -573,7 +555,7 @@
                                     type: 'circle',
                                     source: 'filtered-salud',
                                     paint: {
-                                        'circle-radius': 6,
+                                        'circle-radius': 4,
                                         'circle-color': '#f50000'
                                     }
                                 });
@@ -590,12 +572,6 @@
                                 const saludCount = map.queryRenderedFeatures({
                                     layers: ['salud-layer']
                                 }).filter(feature => turf.booleanContains(isocronaGeometry, feature.geometry)).length;
-                                const nearbyServicesHTML = `
-                                    <strong style="font-size: 14px;">Servicios a 1 Km caminando</strong><br>
-                                    <strong style="color: #144afc;">Servicios educativos: ${schoolsCount}</strong><br>
-                                    <strong style="color: #f50000;">Servicios de salud: ${saludCount}</strong><br>
-                                    <strong style="color: #ffd907;">Abarrotes y misceláneas: ${abarrotesCount}</strong><br>
-                                `;
 
                                 const updatedDescription = `
                                     <style>
@@ -682,7 +658,7 @@
             map.on('mouseleave', 'tileset-layer', () => {
                 map.getCanvas().style.cursor = '';
             });
-
+            
             const toggleControl = document.getElementById('toggle-geojson');
             toggleControl.addEventListener('change', (e) => {
                 if (e.target.checked) {
@@ -691,6 +667,7 @@
                     map.setLayoutProperty('tileset-layer', 'visibility', 'none');
                 }
             });
+            
             function showTab(tabName) {
                 // Ocultar todas las pestañas y quitar la clase active de los botones
                 const tabs = document.querySelectorAll('.tab-content');
@@ -718,25 +695,44 @@
                 showTab('download');
             });
             
-            // Añadir este bloque de código para manejar el evento click en la pestaña "Servicios cercanos"
+            // Añadir el evento click en la pestaña "Servicios cercanos"
+
+            
+            // Función para calcular los conteos de servicios dentro de la isocrona
+            function countServicesInIsocrona(isocronaGeometry) {
+                const abarrotesCount = map.queryRenderedFeatures({
+                    layers: ['abarrotes-layer']
+                }).filter(feature => turf.booleanContains(isocronaGeometry, feature.geometry)).length;
+
+                const schoolsCount = map.queryRenderedFeatures({
+                    layers: ['escuelas-layer']
+                }).filter(feature => turf.booleanContains(isocronaGeometry, feature.geometry)).length;
+
+                const saludCount = map.queryRenderedFeatures({
+                    layers: ['salud-layer']
+                }).filter(feature => turf.booleanContains(isocronaGeometry, feature.geometry)).length;
+
+                return { abarrotesCount, schoolsCount, saludCount };
+            }
+            // Añadir el evento click en la pestaña "Servicios cercanos"
             document.querySelector(`.tab-button[onclick="showTab('nearby-services')"]`).addEventListener('click', () => {
+                // Obtener la geometría de la isocrona
+                const isocronaGeometry = map.getSource('isochrone-source')._data.features[0].geometry;
+
                 // Calcular los conteos de servicios a partir de la isocrona
-                const abarrotesCount = map.querySourceFeatures('filtered-abarrotes', {}).length;
-                const schoolsCount = map.querySourceFeatures('filtered-schools', {}).length;
-                const saludCount = map.querySourceFeatures('filtered-salud', {}).length;
+                const { abarrotesCount, schoolsCount, saludCount } = countServicesInIsocrona(isocronaGeometry);
 
                 // Actualizar el conteo de servicios cuando se hace clic en la pestaña
                 const nearbyServicesHTML = `
-                    <strong style="font-size: 14px;line-height: 1.5;">Servicios a 1 Km caminando</strong><br>
-                    <strong style="color: #144afc;line-height: 1.5;">Servicios educativos: ${schoolsCount}</strong><br>
-                    <strong style="color: #f50000;line-height: 1.5;">Servicios de salud: ${saludCount}</strong><br>
-                    <strong style="color: #ffd907;line-height: 1.5;">Abarrotes y misceláneas: ${abarrotesCount}</strong><br>
+                    <strong style="font-size: 14px;line-height: 1;">Servicios a 1 Km caminando</strong><br>
+                    <strong style="color: #144afc;line-height: 1;">Servicios educativos: ${schoolsCount}</strong><br>
+                    <strong style="color: #f50000;line-height: 1;">Servicios de salud: ${saludCount}</strong><br>
+                    <strong style="color: #ffd907;line-height: 1;">Abarrotes y misceláneas: ${abarrotesCount}</strong><br>
                 `;
                 document.getElementById('nearby-services').innerHTML = nearbyServicesHTML;
 
                 showTab('nearby-services');
             });
-            
             document.addEventListener('DOMContentLoaded', (event) => {
                 const expandBtn = document.querySelector('.description .expand-btn');
                 expandBtn.addEventListener('click', function() {
@@ -798,7 +794,8 @@
                 }
             });
         });
-
+        
     </script>
+
 </body>
 </html>
