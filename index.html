@@ -17,6 +17,7 @@
         .checkbox-container,
         .info-download-container {
             display: flex;
+            font-size: 12px;
             align-items: center;
             gap: 10px; /* Espacio entre los elementos */
         }
@@ -122,11 +123,6 @@
             margin-bottom: 0px;
         } /*  Estilos para el título h1 en el recuadro */
         
-        .map-overlay h2 {
-            margin: 0;
-            font-size: 14px;
-            margin-bottom: 5px; /* Espacio entre h2 y el siguiente elemento */
-        } /* Estilos para el subtítulo h2 en el recuadro  */
 
         .map-controls {
             margin-top: 5px;
@@ -137,12 +133,13 @@
             font-weight: 400; /* Regular */
         } /*  Estilos para los botones y texto informativo de los controles del mapa */
         
-        .map-overlay .info-text {
-            margin-top: 10px;
+        .map-overlay .info-text { /* Este elemento es el texto de la pestaña 'descargar' */
+            margin-top: 20px;
             display: block;
             margin-bottom: 10px; /* Espacio debajo del texto */
             font-size: 14px;
             color: #333;
+            text-align: center;
         } /* Estilos para el texto informativo en el recuadro  */
         
         .mapboxgl-popup-content {
@@ -291,7 +288,7 @@
             bottom: 0; /* Ubica el contenedor en la parte inferior */
             left: 0; /* Alinea a la izquierda */
             width: 100%; /* Ocupa todo el ancho */
-            max-height: 30%; /* Ajusta la altura máxima para que no cubra toda la pantalla */
+            max-height: 40%; /* Ajusta la altura máxima para que no cubra toda la pantalla */
             background-color: white; /* Color de fondo */
             z-index: 1000; /* Asegúrate de que esté por encima de otros elementos */
             border-top: 1px solid #ccc; /* Borde superior para separación */
@@ -344,7 +341,6 @@
     <div class="info-container">
         
         <h1>Inmuebles residenciales en venta</h1> <!-- Título principal del recuadro -->
-        <h3>Zona Metropolitana del Valle de México y alrededores</h3>  <!-- Subtítulo del recuadro -->
         
          <!-- Barra de pestañas -->
         <div class="tabs">
@@ -668,13 +664,15 @@
                                             
                                         }
                                         .popup-content {
+                                            padding: 5px 15px;
                                             font-family: 'Montserrat', sans-serif;
                                             font-size: 12px;
                                             color: #333;
-                                            line-height: 1.5; /* Espaciado entre filas */
+                                            line-height: 2; /* Espaciado entre filas */
                                             text-align: jusitfy;
                                         }
                                         .popup-header {
+                                            margin-top: 20px;
                                             display: flex;
                                             justify-content: space-between;
                                             align-items: center;
@@ -684,11 +682,6 @@
                                     <div class="popup-content">
                                         <div class="popup-header">
                                             <strong>${properties.Titulo}</strong>
-                                            <button id="showMoreBtn" class="popup-button" onclick="document.getElementById('moreInfo').style.display='block'; this.style.display='none'; document.getElementById('showLessBtn').style.display='block';">Mostrar más</button>
-                                            <button id="showLessBtn" class="popup-button" style="display:none;" onclick="document.getElementById('moreInfo').style.display='none'; this.style.display='none'; document.getElementById('showMoreBtn').style.display='block';">Mostrar menos</button>
-                                        </div>
-
-                                        <div id="moreInfo" style="display:none;">
                                             Municipio: ${properties.NOMGEO}<br>
                                             Precio (MXN): ${precio_formateado}<br>
                                             Superficie construida (m²): ${properties.Sup_Cons}<br>
@@ -700,8 +693,7 @@
                                             Edad: ${properties.Edad}<br>
                                             Baños: ${properties.Baños}<br>
                                             Estacionamiento: ${properties.Estacionam}<br>
-                                        
-                                            
+                                           
                                         </div>
 
 
