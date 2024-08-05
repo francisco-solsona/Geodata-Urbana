@@ -323,11 +323,41 @@
         #nearby-services strong:hover {
             text-decoration: underline; /* Subrayado al hacer hover */
         }
+        
+        
+        .dropdown-container {
+            font-size: 12px;
+            font-family: 'Montserrat', sans-serif; /* Aplica la fuente Montserrat */
+        }
+        
+        #filter-cve_ent {
+            font-family: 'Montserrat', sans-serif; /* Cambia el tipo de letra del dropdown */
+            font-size: 12px; /* Cambia el tamaño de la letra del dropdown */
+        }
+
+        #filter-cve_ent option {
+            font-family: 'Montserrat', sans-serif; /* Cambia el tipo de letra de las opciones */
+            font-size: 12px; /* Cambia el tamaño de la letra de las opciones */
+            text-align: center; /* Centra el texto en el botón */
+        }
+        
     </style>
 </head>
 <body>
     
     <div class="geocoder-container" id="geocoder">
+
+        
+        <div class="dropdown-container">
+            <label for="filter-cve_ent">Filtrar por entidad:</label>
+            <select id="filter-cve_ent">
+                <option value="">Todos</option>
+                <option value="09">Ciudad de México</option>
+                <option value="15">Estado de México</option>
+                <option value="17">Morelos</option>
+                <!-- Agrega más opciones según los valores de CVE_ENT -->
+            </select>
+        </div>
         
         <div class="checkbox-container">
             <label for="toggle-geojson">Mostrar puntos</label> <!-- Etiqueta para el checkbox -->  
@@ -407,7 +437,7 @@
         });
 
         map.on('load', () => {
-            
+
             map.addSource('escuelas', {
                 type: 'vector',
                 url: 'mapbox://paco-solsona.by3ibyef' // Coloca aquí la URL de tu GeoJSON de escuelas
@@ -473,6 +503,31 @@
             });
             /* */
                       
+            
+             map.on('sourcedata', (e) => {
+                if (e.sourceId === 'tileset-source' && e.isSourceLoaded) {
+                    const features = map.querySourceFeatures('tileset-source', { sourceLayer: 'IINM_RESIDENCIALES_VENTA-3dw8zx' });
+                    features.forEach((feature) => {
+                        uniqueValues.add(feature.properties.CVE_ENT);
+                    });
+
+                    const filterCVE_ENT = document.getElementById('filter-cve_ent');
+                    uniqueValues.forEach((value) => {
+                        const option = document.createElement('option');
+                        option.value = value;
+                        option.text = value;
+                        filterCVE_ENT.add(option);
+                    });
+                }
+            });
+
+            document.getElementById('filter-cve_ent').addEventListener('change', (e) => {
+                const selectedValue = e.target.value;
+                map.setFilter('tileset-layer', selectedValue ? ['==', ['get', 'CVE_ENT'], selectedValue] : null);
+            });
+
+            // Agregar otras capas y fuentes aquí...
+
             map.on('click', 'tileset-layer', (e) => {
                 const coordinates = e.features[0].geometry.coordinates.slice();
                 const properties = e.features[0].properties;
@@ -724,6 +779,7 @@
             map.on('mouseleave', 'tileset-layer', () => {
                 map.getCanvas().style.cursor = '';
             });
+            
             
             const toggleControl = document.getElementById('toggle-geojson');
             toggleControl.addEventListener('change', (e) => {
