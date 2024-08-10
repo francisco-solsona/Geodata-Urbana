@@ -31,11 +31,13 @@
             border-radius: 5px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             margin: 10px 0;
-            max-width: 350px; /* Ajusta el ancho según sea necesario */
             position: relative;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
+            max-height: 500px; /* Puedes ajustar la altura según tus necesidades */
+            max-width: 350px;
+            overflow-y: auto;
 
         }
         #description {
@@ -157,11 +159,11 @@
             font-size: 12px;
             display: block;
             margin-top: 10px;
-            padding: 5px 10px;
+            padding: 5px 5px;
             background-color: #0074D9;
             color: white;
             border: none;
-            border-radius: 3px;
+            border-radius: 2px;
             cursor: pointer;
             font-family: 'Montserrat', sans-serif;
             font-weight: 400;
@@ -174,6 +176,7 @@
         
         .geocoder-container {
             position: absolute;
+            margin-top: 75px; /* Ajusta este valor según la altura real del header */
             top: 10px;
             right: 10px;
             z-index: 1;
@@ -183,18 +186,6 @@
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
             font-family: 'Montserrat', sans-serif;
         } /*  Estilos para el contenedor del geocodificador */
-        
-        .geocoder-container > * {
-            margin-bottom: 5px;
-            margin-top: 5px;/* Espacio entre los elementos */
-            
-        } /* Estilos para los elementos dentro del contenedor del geocodificador  */
-        .info-container {
-            max-height: 550px; /* Puedes ajustar la altura según tus necesidades */
-            max-width: 350px;
-            overflow-y: auto;
-        }
-
         
         .tabs {
             display: flex; /* Usar flexbox para la disposición */
@@ -340,24 +331,61 @@
             font-size: 12px; /* Cambia el tamaño de la letra de las opciones */
             text-align: center; /* Centra el texto en el botón */
         }
-        
+
+        .header {
+            position: relative;
+            text-align: center;
+            width: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            border: none;
+            z-index: 10; /* Asegura que esté sobre otros elementos */
+            height: 75px;
+        }
+
+        .header img {
+            width: 100%;
+            height: auto;
+            opacity: 1;
+            display: block;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header h1 {
+            position: absolute;
+            font-size: 36px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            margin: 0;
+        }
+
+        .map-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1; /* Asegura que esté debajo del header */
+        }
     </style>
 </head>
 <body>
     
+    <div class="header" style="position: relative; text-align: center; width: 100%; overflow: hidden; margin: 0; padding: 0; border: none;">
+        <img src="https://i.imgur.com/9iMowPv.jpg" alt="Fondo" style="width: 100%; height: auto; opacity: 1; display: block; margin: 0; padding: 0;">
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: black; opacity: 0.6; margin: 0; padding: 0;"></div>
+        <h1 style="position: absolute; font-size: 36px; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; margin: 0;">
+            <a href="http://www.geo-data-urbana.com" style="color: white;"><strong>GEODATA URBANA</strong></a>
+        </h1>
+    </div>
+    
+    <div id="map"></div>
+    
     <div class="geocoder-container" id="geocoder">
-
-        
-        <div class="dropdown-container">
-            <label for="filter-cve_ent">Filtrar por entidad:</label>
-            <select id="filter-cve_ent">
-                <option value="">Todos</option>
-                <option value="09">Ciudad de México</option>
-                <option value="15">Estado de México</option>
-                <option value="17">Morelos</option>
-                <!-- Agrega más opciones según los valores de CVE_ENT -->
-            </select>
-        </div>
         
         <div class="checkbox-container">
             <label for="toggle-geojson">Mostrar puntos</label> <!-- Etiqueta para el checkbox -->  
@@ -366,54 +394,61 @@
         
     </div>
     
-    <div id="map"></div>
-    
     <div class="info-container">
         
-        <h1>Inmuebles residenciales en venta</h1> <!-- Título principal del recuadro -->
+    <h2>Inmuebles residenciales en venta</h2>  <!-- Subtítulo del recuadro -->
         
-         <!-- Barra de pestañas -->
-        <div class="tabs">
-            <button class="tab-button" onclick="showTab('description')">Geodata Urbana</button>
-            <button class="tab-button" onclick="showTab('property-info')">Inmueble</button>
-            <button class="tab-button" onclick="showTab('nearby-services')">Servicios cercanos</button>
-            <button class="tab-button" onclick="showTab('download')">Descargar</button>
-        </div>
+    <div class="dropdown-container">
+        <label for="filter-cve_ent" style="margin-right: 10px;">Selecciona una entidad:</label>
+        <select id="filter-cve_ent">
+            <option value="">Todos</option>
+            <option value="09">Ciudad de México</option>
+            <option value="15">Estado de México</option>
+            <option value="17">Morelos</option>
+            <!-- Agrega más opciones según los valores de CVE_ENT -->
+        </select>
+    </div><br>
+        
+     <!-- Barra de pestañas -->
+    <div class="tabs">
+        <button class="tab-button" onclick="showTab('description')">Geodata Urbana</button>
+        <button class="tab-button" onclick="showTab('property-info')">Inmueble</button>
+        <button class="tab-button" onclick="showTab('nearby-services')">Servicios cercanos</button>
+        <button class="tab-button" onclick="showTab('download')">Descargar</button>
+    </div>
 
-        <!-- Contenido de las pestañas -->
-        <div id="description" class="tab-content">
-            <p>
-                La información mostrada en este mapa corresponde a <strong>inmuebles residenciales en venta</strong> recopilados 
-                de distintas páginas de promoción de inmuebles durante el primer semestre del año 2024. 
-            </p>
-            El objetivo en <a href="http://www.geo-data-urbana.com"><strong>Geodata Urbana</strong></a> es crear una base de datos abiertos 
-            donde analistas espaciales o especialistas en sistemas de información geográfica puedan acceder 
-            a esta información de manera <strong>rápida y sencilla</strong> para potenciar los análisis realizados en el entorno urbano.
-            <p></p>
-            <p>
-                Esta base de datos puede ser utilizada para diversos fines, especialmente en el ámbito de la investigación y desarrollo urbano, 
-                donde se pueden realizar estudios sobre tendencias del mercado inmobiliario, análisis de accesibilidad y 
-                localización, evaluación de precios y superficies, y mucho más.
-            </p>
+    <!-- Contenido de las pestañas -->
+    <div id="description" class="tab-content">
+        <p>
+            La información mostrada en este mapa corresponde a <strong>inmuebles residenciales en venta</strong> recopilados 
+            de distintas páginas de promoción de inmuebles durante el primer semestre del año 2024. 
+        </p>
+        El objetivo en <a href="http://www.geo-data-urbana.com"><strong>Geodata Urbana</strong></a> es crear una base de datos abiertos 
+        donde analistas espaciales o especialistas en sistemas de información geográfica puedan acceder 
+        a esta información de manera <strong>rápida y sencilla</strong> para potenciar los análisis realizados en el entorno urbano.
+        <p></p>
+        <p>
+            Esta base de datos puede ser utilizada para diversos fines, especialmente en el ámbito de la investigación y desarrollo urbano, 
+            donde se pueden realizar estudios sobre tendencias del mercado inmobiliario, análisis de accesibilidad y 
+            localización, evaluación de precios y superficies, y mucho más.
+        </p>
+    </div>
+
+    <div id="property-info" class="tab-content" style="display:none;"></div>
+
+    <div id="nearby-services" class="tab-content" style="display:none;"></div>
+
+    <div id="download" class="tab-content">
+        <p>
+            Aquí podrás descargar en formato GeoJSON los inmuebles en venta visibles en la ventana. 
+        </p>
+        <div class="info-download-container" id ="info">
+            <button id="download-button">Descargar GeoJSON</button> <!-- Botón para descargar datos -->
         </div>
-        <div id="property-info" class="tab-content" style="display:none;"></div>
-        <div id="nearby-services" class="tab-content" style="display:none;">
-            <strong style="font-size: 14px;">Servicios a 1 Km caminando</strong><br>
-            <strong style="color: #144afc;">Servicios educativos: ${schoolsCount}</strong><br>
-            <strong style="color: #f50000;">Servicios de salud: ${saludCount}</strong><br>
-            <strong style="color: #ffd907;">Abarrotes y misceláneas: ${abarrotesCount}</strong><br>
-        </div>
-        <div id="download" class="tab-content">
-            <p>
-                Aquí podrás descargar en formato GeoJSON los inmuebles en venta visibles en la ventana. 
-            </p>
-            <div class="info-download-container" id ="info">
-                <button id="download-button">Descargar GeoJSON</button> <!-- Botón para descargar datos -->
-            </div>
     </div>
     
     <div id="service-info-container" class="service-info-container">
-        <button id="toggle-button">Ver servicios selecionados</button>    
+        <button id="toggle-button">Ocultar servicios</button>    
         <div id="service-info" class="service-info"></div> 
     </div>
   
@@ -502,8 +537,7 @@
                 }
             });
             /* */
-                      
-            
+ 
              map.on('sourcedata', (e) => {
                 if (e.sourceId === 'tileset-source' && e.isSourceLoaded) {
                     const features = map.querySourceFeatures('tileset-source', { sourceLayer: 'IINM_RESIDENCIALES_VENTA-3dw8zx' });
@@ -527,9 +561,11 @@
             });
 
             // Agregar otras capas y fuentes aquí...
-
+            let coordinates;
             map.on('click', 'tileset-layer', (e) => {
-                const coordinates = e.features[0].geometry.coordinates.slice();
+                
+                
+                coordinates = e.features[0].geometry.coordinates.slice(); // Cambiar a let
                 const properties = e.features[0].properties;
 
                 // Eliminar cualquier punto seleccionado previamente
@@ -606,14 +642,22 @@
                             }
                         });
                         
-                    
                         // Aquí es donde se hace el ajuste del zoom a la capa de isocrona
                         const bounds = new mapboxgl.LngLatBounds();
                         data.features[0].geometry.coordinates[0].forEach(coord => {
                             bounds.extend(coord);
                         });
                         map.fitBounds(bounds, {
-                            padding: 100
+                            padding: {
+                                top: 100,
+                                bottom: 100,
+                                left: 250,  // Reduce este valor para desplazar más hacia la derecha
+                                right: 0  // Incrementa este valor para desplazar más hacia la derecha
+                            },
+                            duration: 3000,
+                            easing: function(t) {
+                                return t * (2 - t);  // Suavizado: la animación empieza rápido y termina lentamente
+                            }
                         });
                         
                         const isocronaGeometry = data.features[0].geometry;
@@ -704,20 +748,7 @@
 
                                 const updatedDescription = `
                                     <style>
-                                        .popup-button {
-                                            background-color: #656868;
-                                            border: none;
-                                            color: white;
-                                            padding: 5px 10px;
-                                            text-align: jusitfy;
-                                            text-decoration: none;
-                                            display: inline-block;
-                                            font-size: 12px;
-                                            margin: 0px 10px;
-                                            cursor: pointer;
-                                            border-radius: 5px;
-                                            
-                                        }
+
                                         .popup-content {
                                             padding: 5px 15px;
                                             font-family: 'Montserrat', sans-serif;
@@ -750,8 +781,6 @@
                                             Estacionamiento: ${properties.Estacionam}<br>
                                            
                                         </div>
-
-
                                     </div>
                                 `;
                                 
@@ -789,8 +818,6 @@
                     map.setLayoutProperty('tileset-layer', 'visibility', 'none');
                 }
             });
-            
-            
             
             let activeTab = null; // Variable para rastrear la pestaña activa
 
@@ -849,28 +876,249 @@
             }
 
 
+            document.getElementById('filter-cve_ent').addEventListener('change', function () {
+                var selectedValue = this.value;
+
+                if (selectedValue === "09") {
+                    map.flyTo({ center: [-99.1332, 19.4326], zoom: 10 }); // Ciudad de México
+                } else if (selectedValue === "15") {
+                    map.flyTo({ center: [-99.6677, 19.3503], zoom: 10 }); // Estado de México
+                } else if (selectedValue === "17") {
+                    map.flyTo({ center: [-99.2345, 18.9246], zoom: 10 }); // Morelos
+                } else {
+                    map.flyTo({ center: [-99.1332, 19.4326], zoom: 10 }); // Zoom out to view all
+                }
+            });
+            
             // Añadir el evento click en la pestaña "Servicios cercanos"
             document.querySelector(`.tab-button[onclick="showTab('nearby-services')"]`).addEventListener('click', () => {
+
+                const interactiveElementsHTML = `
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; font-family: 'Montserrat', sans-serif;">
+
+                        <!-- Título descriptivo -->
+                        <strong style="font-size: 12px; line-height: 1;">Selecciona el método de transporte y la distancia.</strong>
+
+                        <!-- Contenedor de método de transporte y distancia -->
+                        <div style="display: flex; flex-direction: row; gap: 10px; align-items: center;">
+
+                            <!-- Dropdown para seleccionar el método de transporte -->
+                            <div style="display: flex; flex-direction: column; text-align: center;">
+                                <label for="transportation-method" style="margin-bottom: 10px;" text-align: center;>Método de Transporte:</label>
+                                <select id="transportation-method" style="font-family: 'Montserrat', sans-serif;">
+                                    <option value="walking">Caminando</option>
+                                    <option value="driving">Conduciendo</option>
+                                    <option value="cycling">En bicicleta</option>
+                                </select>
+                            </div>
+
+                            <!-- Cuadro de texto para ingresar la distancia -->
+                            <div style="display: flex; flex-direction: column; text-align: center;">
+                                <label for="isochrone-distance" style="margin-bottom: 10px;" text-align: center;>Distancia (metros):</label>
+                                <input type="number" id="isochrone-distance" min="100" max="10000" value="1000" style="font-family: 'Montserrat', sans-serif;">
+                            </div>
+                        </div>
+
+                        <!-- Botón para generar y mostrar la isocrona -->
+                        <button id="generate-isochrone" style="font-family: 'Montserrat', sans-serif;">Mostrar servicios</button>
+                    </div>
+                `;
                 // Obtener la geometría de la isocrona
                 const isocronaGeometry = map.getSource('isochrone-source')._data.features[0].geometry;
 
                 // Calcular los conteos de servicios a partir de la isocrona
                 const { abarrotesCount, schoolsCount, saludCount } = countServicesInIsocrona(isocronaGeometry);
 
-                // Actualizar el conteo de servicios cuando se hace clic en la pestaña
-                const nearbyServicesHTML = `
-                    <strong style="font-size: 12px;line-height: 1;">Servicios a 1 Km caminando</strong><br>
-                    <strong id="educational-services" style="color: #144afc; cursor: pointer;">Servicios educativos: ${schoolsCount}</strong><br>
-                    <strong id="health-services" style="color: #f50000; cursor: pointer;">Servicios de salud: ${saludCount}</strong><br>
-                    <strong id="grocery-services" style="color: #ffd907; cursor: pointer;">Abarrotes y misceláneas: ${abarrotesCount}</strong><br>
+                // HTML para la información de servicios
+                const servicesInfoHTML = `
+                    
+                    <p>Haz click en cualquiera de los servicios debajo para ver la lista.</p>
+                    <strong id="educational-services" style="color: #144afc; cursor: pointer;">Servicios educativos: ${schoolsCount}</strong>
+                    <strong id="health-services" style="color: #f50000; cursor: pointer;">Servicios de salud: ${saludCount}</strong>
+                    <strong id="grocery-services" style="color: #ffd907; cursor: pointer;">Abarrotes y misceláneas: ${abarrotesCount}</strong>
                 `;
-                document.getElementById('nearby-services').innerHTML = nearbyServicesHTML;
 
+                // Combinar ambos bloques HTML y asignarlo al contenido de la pestaña
+                document.getElementById('nearby-services').innerHTML = interactiveElementsHTML + servicesInfoHTML;
+
+                // Asignar eventos a los servicios
                 handleServiceClick('educational-services', 'filtered-escuelas-layer');
                 handleServiceClick('health-services', 'filtered-salud-layer');
                 handleServiceClick('grocery-services', 'filtered-abarrotes-layer');
 
+                // Mostrar la pestaña "Servicios cercanos"
                 showTab('nearby-services');
+
+                // Añadir el evento al botón "Mostrar servicios" para generar la isocrona
+                document.getElementById('generate-isochrone').addEventListener('click', () => {
+                    
+                    const method = document.getElementById('transportation-method').value;
+                    const distance = document.getElementById('isochrone-distance').value;
+
+                    
+                    // Verifica si hay coordenadas disponibles
+                    if (!coordinates) {
+                        alert('Por favor, selecciona un punto en el mapa primero.');
+                        return;
+                    }
+                    
+                    // Remover la isocrona anterior, si existe
+                    if (map.getLayer('isochrone-layer')) {
+                        map.removeLayer('isochrone-layer');
+                        map.removeLayer('isochrone-line-layer');
+                        map.removeSource('isochrone-source');
+                    }
+
+                    // Aquí deberías integrar el código para generar la nueva isocrona usando el método y distancia seleccionados
+                    
+                    const isochroneUrl = `https://api.mapbox.com/isochrone/v1/mapbox/${method}/${coordinates[0]},${coordinates[1]}?contours_meters=${distance}&polygons=true&access_token=${mapboxgl.accessToken}`;
+                    
+                    fetch(isochroneUrl)
+                        .then(response => response.json())
+                        .then(data => {
+                            map.addSource('isochrone-source', {
+                                type: 'geojson',
+                                data: data
+                            });
+
+                            map.addLayer({
+                                id: 'isochrone-layer',
+                                type: 'fill',
+                                source: 'isochrone-source',
+                                layout: {},
+                                paint: {
+                                    'fill-color': 'grey',
+                                    'fill-opacity': 0.3,
+                                }
+                            });
+
+                            map.addLayer({
+                                id: 'isochrone-line-layer',
+                                type: 'line',
+                                source: 'isochrone-source',
+                                layout: {},
+                                paint: {
+                                    'line-color': 'black',
+                                    'line-width': 4
+                                }
+                            });
+
+                            // Ajustar el zoom a la capa de isocrona
+                            const bounds = new mapboxgl.LngLatBounds();
+                            data.features[0].geometry.coordinates[0].forEach(coord => {
+                                bounds.extend(coord);
+                            });
+                            map.fitBounds(bounds, {
+                                padding: {
+                                    top: 100,
+                                    bottom: 100,
+                                    left: 250,  // Reduce este valor para desplazar más hacia la derecha
+                                    right: 0  // Incrementa este valor para desplazar más hacia la derecha
+                                },
+                                duration: 3000,
+                                easing: function(t) {
+                                    return t * (2 - t);  // Suavizado: la animación empieza rápido y termina lentamente
+                                }
+                            });
+
+                            const isocronaGeometry = data.features[0].geometry;
+
+                            
+                        
+                            // Esperar a que la capa 'escuelas' esté cargada
+                            map.once('idle', () => {
+                                // Actualizar los servicios con los nuevos datos de isocrona
+
+                                const allAbarrotes = map.querySourceFeatures('abarrotes', {sourceLayer: 'Abarrotes-7n21ic'});
+                                const abarrotesInsideIsochrone = allAbarrotes.filter(feature => turf.booleanContains(isocronaGeometry, feature.geometry));
+                                const filteredAbarrotesGeoJSON = {type: 'FeatureCollection', features: abarrotesInsideIsochrone};
+
+                                if (map.getSource('filtered-abarrotes')) {
+                                    map.getSource('filtered-abarrotes').setData(filteredAbarrotesGeoJSON);
+                                } else {
+                                    map.addSource('filtered-abarrotes', {type: 'geojson', data: filteredAbarrotesGeoJSON});
+                                    map.addLayer({
+                                        id: 'filtered-abarrotes-layer',
+                                        type: 'circle',
+                                        source: 'filtered-abarrotes',
+                                        paint: {'circle-radius': 4, 'circle-color': '#ffd907'}
+                                    });
+                                }
+
+                                const allSchools = map.querySourceFeatures('escuelas', {sourceLayer: 'ServiciosEducativos-7u82ox'});
+                                const schoolsInsideIsochrone = allSchools.filter(feature => turf.booleanContains(isocronaGeometry, feature.geometry));
+                                const filteredSchoolsGeoJSON = {type: 'FeatureCollection', features: schoolsInsideIsochrone};
+
+                                if (map.getSource('filtered-escuelas')) {
+                                    map.getSource('filtered-escuelas').setData(filteredSchoolsGeoJSON);
+                                } else {
+                                    map.addSource('filtered-escuelas', {type: 'geojson', data: filteredSchoolsGeoJSON});
+                                    map.addLayer({
+                                        id: 'filtered-escuelas-layer',
+                                        type: 'circle',
+                                        source: 'filtered-escuelas',
+                                        paint: {'circle-radius': 4, 'circle-color': '#144afc'}
+                                    });
+                                }
+
+                                const allSalud = map.querySourceFeatures('salud', {sourceLayer: 'AsistenciaSocial-3goidw'});
+                                const saludInsideIsochrone = allSalud.filter(feature => turf.booleanContains(isocronaGeometry, feature.geometry));
+                                const filteredSaludGeoJSON = {type: 'FeatureCollection', features: saludInsideIsochrone};
+
+                                if (map.getSource('filtered-salud')) {
+                                    map.getSource('filtered-salud').setData(filteredSaludGeoJSON);
+                                } else {
+                                    map.addSource('filtered-salud', {type: 'geojson', data: filteredSaludGeoJSON});
+                                    map.addLayer({
+                                        id: 'filtered-salud-layer',
+                                        type: 'circle',
+                                        source: 'filtered-salud',
+                                        paint: {'circle-radius': 4, 'circle-color': '#f50000'}
+                                    });
+                                }
+                                
+                                map.once('idle', () => {
+                                    const abarrotesCount = map.queryRenderedFeatures({
+                                        layers: ['abarrotes-layer']
+                                    }).filter(feature => turf.booleanContains(isocronaGeometry, feature.geometry)).length;
+                                    const schoolsCount = map.queryRenderedFeatures({
+                                        layers: ['escuelas-layer']
+                                    }).filter(feature => turf.booleanContains(isocronaGeometry, feature.geometry)).length;
+                                    const saludCount = map.queryRenderedFeatures({
+                                        layers: ['salud-layer']
+                                    }).filter(feature => turf.booleanContains(isocronaGeometry, feature.geometry)).length;
+                                        });
+                                
+                                // Calcular los conteos de servicios a partir de la isocrona
+                                const { abarrotesCount, schoolsCount, saludCount } = countServicesInIsocrona(isocronaGeometry);
+
+                                // HTML para la información de servicios
+                                const servicesInfoHTML = `
+                                    <p>Haz click en el servicio de tu interés para ver el listado. Los servicios generados se encuentran a 1 Km caminando desde la vivienda seleccionada</p>
+                                    <strong id="educational-services" style="color: #144afc; cursor: pointer;">Servicios educativos: ${schoolsCount}</strong>
+                                    <strong id="health-services" style="color: #f50000; cursor: pointer;">Servicios de salud: ${saludCount}</strong>
+                                    <strong id="grocery-services" style="color: #ffd907; cursor: pointer;">Abarrotes y misceláneas: ${abarrotesCount}</strong>
+                                `;
+
+                                // Combinar ambos bloques HTML y asignarlo al contenido de la pestaña
+                                document.getElementById('nearby-services').innerHTML = interactiveElementsHTML + servicesInfoHTML;
+
+                                // Asignar eventos a los servicios
+                                handleServiceClick('educational-services', 'filtered-escuelas-layer');
+                                handleServiceClick('health-services', 'filtered-salud-layer');
+                                handleServiceClick('grocery-services', 'filtered-abarrotes-layer');
+
+                                // Mostrar la pestaña "Servicios cercanos"
+                                showTab('nearby-services');
+                                    
+                            });
+                        
+                            
+                        })
+                        .catch(error => {
+                            console.error('Error generating isochrone:', error);
+                        });
+                });
             });
             
             function handleServiceClick(serviceType, serviceLayer) {
@@ -967,7 +1215,7 @@
             });
 
             // Inicializar la tabla como oculta
-            serviceInfo.style.display = 'none';
+            serviceInfo.style.display = 'block';
             
             //////////////////////////////////////////////////////////////////////////////////////////
             
