@@ -14,41 +14,138 @@
             margin-top: 10px; /* Ajusta el espacio entre el botón y el contenido */
         }
 
+        /* PRIMERO TODO EL CSS QUE MODIFICA EL 'HEADER' QUE ES EL QUE TIENE LA IMAGEN, EL NOMBRE Y EL LOGO DE LA PAGINA */
+        .header {
+            position: relative;
+            text-align: center;
+            width: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            border: none;
+            z-index: 10;
+            height: 110px;
+        }
+        .header img {
+            width: 100%;
+            height: auto;
+            opacity: 1;
+            display: block;
+            margin: 0;
+            padding: 0;
+            filter: grayscale(100%); /* Imagen en blanco y negro */
+        }
+        .header h1 {
+            position: absolute;
+            font-size: 42px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            margin: 0;
+            display: flex; /* Flexbox para alinear logo y texto */
+            align-items: center; /* Alinear verticalmente el logo y el texto */
+        }
+        .header .logo {
+            width: 100px; /* Ajusta el tamaño del logo */
+            height: auto;
+            margin-right: 20px; /* Espacio entre el texto y el logo */
+        }
+        .geodata-link {
+            font-family: 'Montserrat', sans-serif; /* Cambia el tipo de letra de las opciones */
+            color: white; /* Color del texto */
+            font-weight: bold; /* Negrita */
+            font-size: 42px; /* Tamaño de fuente */
+            text-decoration: none; /* Sin subrayado */
+            transition: color 0.3s; /* Transición suave para cambios de color */
+        }
+        /* AQUI VA EL CSS PARA MODIFICAR EL CHECKBOX E INFO DOWNLOAD */
         .checkbox-container,
         .info-download-container {
             display: flex;
-            font-size: 12px;
+            font-size: 14px;
             align-items: center;
             gap: 10px; /* Espacio entre los elementos */
         }
-
+        /* AQUI VA EL CSS PARA MODIFICAR EL INFO CONTAINER QUE ES EL CONTENEDOR DEL MENÚ */
         .info-container {
             font-family: 'Montserrat', sans-serif;
-            font-size: 12px;
-            color: #333;
+            font-size: 14px;
             background-color: #f9f9f9;
-            padding: 15px;
-            border-radius: 5px;
+            border-radius: 0px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            margin: 10px 0;
+            margin: 0px 0 0; /* Margen superior para no superponerse con la cabecera */
             position: relative;
-            display: flex;
+            display: none;
             flex-direction: column;
             align-items: flex-start;
             max-height: 500px; /* Puedes ajustar la altura según tus necesidades */
             max-width: 350px;
             overflow-y: auto;
-
+            transition: margin-left 0.5s; /* Animación suave para el desplazamiento */
+            margin-left: 125px; /* Ajuste inicial para cuando el menú está contraído */
+            padding: 20px;
+            
         }
-        #description {
+
+        #filter-cve_ent  {
+            font-family: 'Montserrat', sans-serif; /* Aplicar la fuente Montserrat */
+            font-size: 14px; /* Tamaño de fuente, ajusta según tu preferencia */
+            padding: 8px 16px; /* Relleno para el botón */
+            border: none; /* Sin borde */
+            border-radius: 5px; /* Bordes redondeados */
+            background-color: #0074D9; /* Color de fondo */
+            color: white; /* Color del texto */
+            cursor: pointer; /* Cursor al pasar sobre el botón */
+            width: 100%;
+        }
+
+        #filter-cve_ent option {
+            font-family: 'Montserrat', sans-serif; /* Cambia el tipo de letra de las opciones */
+            font-size: 14px; /* Cambia el tamaño de la letra de las opciones */
+            text-align: center; /* Centra el texto en el botón */
+        }
+        /* AQUI VA EL CSS PARA MODIFICAR LAS PESTAÑAS DEL MENÚ */
+        .tabs {
+            display: flex; /* Usar flexbox para la disposición */
+            flex-wrap: wrap; /* Permitir que los botones se envuelvan en múltiples filas */
+            justify-content: space-between; /* Espacio entre los botones */
+            padding: 0px; /* Espaciado alrededor de la barra de pestañas */
+            width: 100%; /* Asegura que ocupe todo el ancho del contenedor */
+        }
+        .tab-button {
+            flex: 1; /* Hacer que cada botón tome el mismo ancho */
+            margin: 1px; /* Espaciado entre los botones */
+            padding: 0px; /* Espaciado interno del botón */
+            cursor: pointer;
+            border: 1px solid #ccc; /* Borde del botón */
+            background-color: #f1f1f1; /* Color de fondo del botón */
+            font-size: 14px; /* Tamaño de fuente */
+            text-align: center; /* Centra el texto en el botón */
+            box-sizing: border-box; /* Incluye padding en el tamaño total */
+            font-family: 'Montserrat', sans-serif;
+        }
+        .tab-button:hover {
+            background-color: #ddd;
+        }
+        .tab-button.active {
+            background-color: #4CAF50;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        /* AQUI VA EL CSS PARA MODIFICAR EL TEXTO EN LA PESTAÑA 'DESCRIPCIÓN' */
+        #how-to {
             font-family: 'Montserrat', sans-serif; /* Asignamos la fuente del texto */
-            font-size: 12px; /* Tamaño de fuente */
+            font-size: 14px; /* Tamaño de fuente */
             color: #333; /* Color del texto */
             background-color: #f9f9f9; /* Color de fondo */
             padding: 15px; /* Relleno interno */
-            border-radius: 5px; /* Bordes redondeados */
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Sombra */
-            margin: 10px 0; /* Margen superior e inferior */
             text-align: justify; /* Justificar el texto */
             max-height: 700px; /* Altura inicial */
             overflow-y: auto;
@@ -56,13 +153,26 @@
             position: relative;
             line-height: 1.5;
         }
-
+        /* AQUI VA EL CSS PARA MODIFICAR EL TEXTO EN LA PESTAÑA 'DESCRIPCIÓN' */
+        #description {
+            font-family: 'Montserrat', sans-serif; /* Asignamos la fuente del texto */
+            font-size: 14px; /* Tamaño de fuente */
+            color: #333; /* Color del texto */
+            background-color: #f9f9f9; /* Color de fondo */
+            padding: 15px; /* Relleno interno */
+            text-align: justify; /* Justificar el texto */
+            max-height: 700px; /* Altura inicial */
+            overflow-y: auto;
+            max-width: auto;
+            position: relative;
+            line-height: 1.5;
+        }
         .description.expanded {
             max-height: none;
         }
         .expand-btn {
             font-family: 'Montserrat', sans-serif; /* Aplicar la fuente Montserrat */
-            font-size: 12px; /* Tamaño de fuente, ajusta según tu preferencia */
+            font-size: 14px; /* Tamaño de fuente, ajusta según tu preferencia */
             padding: 8px 10px; /* Relleno para el botón */
             border: none; /* Sin borde */
             border-radius: 5px; /* Bordes redondeados */
@@ -86,7 +196,7 @@
 
         #download-button {
             font-family: 'Montserrat', sans-serif; /* Aplicar la fuente Montserrat */
-            font-size: 12px; /* Tamaño de fuente, ajusta según tu preferencia */
+            font-size: 14px; /* Tamaño de fuente, ajusta según tu preferencia */
             padding: 8px 16px; /* Relleno para el botón */
             border: none; /* Sin borde */
             border-radius: 5px; /* Bordes redondeados */
@@ -96,10 +206,39 @@
             width: 100%;
         }
 
+        #filter-button {
+            font-family: 'Montserrat', sans-serif; /* Aplicar la fuente Montserrat */
+            font-size: 14px; /* Tamaño de fuente, ajusta según tu preferencia */
+            padding: 8px 16px; /* Relleno para el botón */
+            border: none; /* Sin borde */
+            border-radius: 5px; /* Bordes redondeados */
+            background-color: #333; /* Color de fondo */
+            color: white; /* Color del texto */
+            cursor: pointer; /* Cursor al pasar sobre el botón */
+            width: 100%;
+            margin-bottom: 15px
+        }
+        #filter-cve_ent {
+            margin-top: 15;
+            margin-bottom: 10px;
+            background-color: #333;
+        }
         #download-button:hover {
             background-color: #0056b3; /* Color de fondo al pasar el ratón */
         }
-        
+        .map-legend {
+            position: absolute;
+            margin-top: 10px;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+            font-family: 'Montserrat', sans-serif; /* Aplicar la fuente Montserrat */
+            font-size: 14px; /* Tamaño de fuente, ajusta según tu preferencia */
+            z-index: 1;
+        }
         .map-overlay {
             position: absolute;
             top: 10px;
@@ -119,9 +258,9 @@
             font-weight: 400;
         }
         
-        .map-overlay h1 {
+        .map-overlay h2 {
             margin: 0;
-            font-size: 18px;
+            font-size: 24px;
             margin-bottom: 0px;
         } /*  Estilos para el título h1 en el recuadro */
         
@@ -145,18 +284,18 @@
         } /* Estilos para el texto informativo en el recuadro  */
         
         .mapboxgl-popup-content {
-            font-size: 12px;
+            font-size: 14px;
             font-family: 'Montserrat', sans-serif;
             font-weight: 400; /* Regular */
         } /* Estilos para el contenido de los popups de Mapbox  */
         
         .map-controls input[type="checkbox"] {
-            font-size: 12px;
+            font-size: 14px;
             margin-right: 10px;
         } /* Estilos para los checkboxes de los controles del mapa  */
         
         .map-controls button {
-            font-size: 12px;
+            font-size: 14px;
             display: block;
             margin-top: 10px;
             padding: 5px 5px;
@@ -176,7 +315,7 @@
         
         .geocoder-container {
             position: absolute;
-            margin-top: 75px; /* Ajusta este valor según la altura real del header */
+            margin-top: 125px; /* Ajusta este valor según la altura real del header */
             top: 10px;
             right: 10px;
             z-index: 1;
@@ -187,51 +326,14 @@
             font-family: 'Montserrat', sans-serif;
         } /*  Estilos para el contenedor del geocodificador */
         
-        .tabs {
-            display: flex; /* Usar flexbox para la disposición */
-            flex-wrap: wrap; /* Permitir que los botones se envuelvan en múltiples filas */
-            justify-content: space-between; /* Espacio entre los botones */
-            padding: 0px; /* Espaciado alrededor de la barra de pestañas */
-            width: 100%; /* Asegura que ocupe todo el ancho del contenedor */
-        }
-
-        .tab-button {
-            flex: 1; /* Hacer que cada botón tome el mismo ancho */
-            margin: 1px; /* Espaciado entre los botones */
-            padding: 0px; /* Espaciado interno del botón */
-            cursor: pointer;
-            border: 1px solid #ccc; /* Borde del botón */
-            background-color: #f1f1f1; /* Color de fondo del botón */
-            font-size: 12px; /* Tamaño de fuente */
-            text-align: center; /* Centra el texto en el botón */
-            box-sizing: border-box; /* Incluye padding en el tamaño total */
-            font-family: 'Montserrat', sans-serif;
-        }
-
-        .tab-button:hover {
-            background-color: #ddd;
-        }
-
-        .tab-button.active {
-            background-color: #4CAF50;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-            width: 100%;
-            box-sizing: border-box;
-        }
+        
         #nearby-services strong {
             display: block;
             margin-top: 20px;
         }
         
         table {
-            font-size: 12px; /* Tamaño de fuente */
+            font-size: 14px; /* Tamaño de fuente */
             border-collapse: collapse; /* Colapsar bordes de la tabla */
             width: 100%; /* Ancho total de la tabla */
         }
@@ -292,7 +394,7 @@
             /* Add other styles as needed */
         }
         #toggle-button {
-            font-size: 12px; /* Tamaño de fuente */
+            font-size: 14px; /* Tamaño de fuente */
             width: 100%; /* Cubre el 100% del ancho */
             font-family: 'Montserrat', sans-serif; /* Aplica la fuente Montserrat */
             background-color: #4CAF50; /* Cambia el color de fondo (opcional) */
@@ -317,141 +419,220 @@
         
         
         .dropdown-container {
-            font-size: 12px;
+            font-size: 14px;
             font-family: 'Montserrat', sans-serif; /* Aplica la fuente Montserrat */
         }
         
-        #filter-cve_ent {
-            font-family: 'Montserrat', sans-serif; /* Cambia el tipo de letra del dropdown */
-            font-size: 12px; /* Cambia el tamaño de la letra del dropdown */
+        .side-tabs {
+            position: fixed;
+            left: 0;
+            height: calc(100% - 100px); /* Ajusta la altura para no sobrepasar la cabecera */
+            width: 100px; /* Ajusta el ancho según prefieras */
+            background-color: #333;
+            overflow: hidden; /* Esconde el contenido del menú cuando está contraído */
+            transition: 1s;
+            z-index: 1000; /* Asegura que el menú esté por encima de otros elementos */
+            padding-top: 10px; /* Ajusta el padding superior según sea necesario */
+            margin-right: 10px;
         }
 
-        #filter-cve_ent option {
-            font-family: 'Montserrat', sans-serif; /* Cambia el tipo de letra de las opciones */
-            font-size: 12px; /* Cambia el tamaño de la letra de las opciones */
+        .tab-button {
+            display: block;
+            width: 95%;
+            padding: 10px; 
+            text-align: center;
+            border: none;
+            background-color: #333;
+            color: white;
+            cursor: pointer;
+            outline: none;
+            margin-top: 10px;
+            margin-right: 0px;
+            
+        }
+        .tab-button:hover {
+            background-color: #575757;
+        }
+
+        .tab-button.active {
+            background-color: #575757; /* Color de fondo cuando el botón está activo */
+        }
+        #menu-toggle {
+            font-size: 36px; /* Tamaño de la fuente */
+            padding: 0px; /* Espaciado interno */
+            cursor: pointer;
+            border: 0px solid #575757; /* Borde del botón */
+            background-color: #333; /* Color de fondo del botón */
+            text-align: center; /* Centra el texto en el botón */
+            margin-right: 20px;
+        }
+        .side-tabs .tab-button:not(#menu-toggle) {
+            display: none;
+        }
+        
+        .side-tabs .tab-button {
+            
+            align-items: center; /* Alinear verticalmente el contenido */
+        }
+
+        .side-tabs .tab-button label {
+            margin-right: 5px; /* Espacio entre el label y el select */
+        }
+
+        .side-tabs select {
+            margin-top: 10px;
+            width: 100px; /* Ajusta el ancho del select como prefieras */
+        }
+        .header h1 div {
+            display: block; /* Hace que el div se comporte como un bloque */
+            margin-top: 0px; /* Ajusta el margen superior para separarlo del h1 */
             text-align: center; /* Centra el texto en el botón */
         }
 
-        .header {
-            position: relative;
-            text-align: center;
-            width: 100%;
-            overflow: hidden;
-            margin: 0;
-            padding: 0;
-            border: none;
-            z-index: 10; /* Asegura que esté sobre otros elementos */
-            height: 75px;
+        .maki-icon {
+            width: 42px; /* Ajusta el tamaño según tus necesidades */
+            height: auto; /* Mantiene la proporción */
+            filter: invert(100%); /* Cambia el color a blanco */
+        }
+        
+        .side-tabs .tab-button {
+            position: relative; /* Necesario para posicionar el tooltip */
         }
 
-        .header img {
-            width: 100%;
-            height: auto;
-            opacity: 1;
-            display: block;
-            margin: 0;
-            padding: 0;
-        }
-
-        .header h1 {
+        .side-tabs .tab-button::after {
+            content: attr(data-tooltip); /* Muestra el contenido del atributo data-tooltip */
             position: absolute;
-            font-size: 36px;
-            top: 50%;
+            bottom: 100%; /* Posiciona el tooltip encima del botón */
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translateX(-50%);
+            background-color: black;
             color: white;
-            margin: 0;
+            padding: 5px;
+            border-radius: 4px;
+            white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: none; /* Hace que el tooltip no interfiera con otros eventos */
+            font-size: 12px;
         }
 
-        .map-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 1; /* Asegura que esté debajo del header */
+        .side-tabs .tab-button:hover::after {
+            opacity: 1;
+            visibility: visible;
         }
+
     </style>
 </head>
 <body>
     
-    <div class="header" style="position: relative; text-align: center; width: 100%; overflow: hidden; margin: 0; padding: 0; border: none;">
-        <img src="https://i.imgur.com/9iMowPv.jpg" alt="Fondo" style="width: 100%; height: auto; opacity: 1; display: block; margin: 0; padding: 0;">
-        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: black; opacity: 0.6; margin: 0; padding: 0;"></div>
-        <h1 style="position: absolute; font-size: 36px; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; margin: 0;">
-            <a href="http://www.geo-data-urbana.com" style="color: white;"><strong>GEODATA URBANA</strong></a>
+    
+    <div class="header">
+        <img src="https://i.imgur.com/9iMowPv.jpg" alt="Fondo">
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: black; opacity: 0.6;"></div>
+        
+        <h1 style="display: flex; align-items: center; justify-content: flex-start;"> <!-- Flex container -->
+            <div style="display: flex; flex-direction: column; text-align: center; margin-right: 20px;"> <!-- Columna para el texto -->
+                <a href="http://www.geo-data-urbana.com" class="geodata-link" target="_blank" rel="noopener noreferrer"><strong>GEODATA URBANA</strong></a>
+                <div style="color: white;  text-align: center; font-size: 14px; margin-top: 0px; margin-right: 20px;">MAPEANDO HOY PARA PLANIFICAR EL MAÑANA</div> <!-- Subtítulo -->
+            </div>
+            <img src="https://i.imgur.com/IVUoM9y.png" alt="Logo" class="logo" style="margin-right: 0px;"> <!-- Margen para separar la imagen -->
+            <div style="display: flex; flex-direction: column; text-align: center;"> <!-- Columna para el texto -->
+                <div style="color: white; font-size: 18px; margin-top: 0px; margin-left: 20px;  text-align: center;">INMUEBLES RESIDENCIALES EN VENTA</div> <!-- Subtítulo -->
+            </div>
         </h1>
     </div>
     
+    
+    
+    
     <div id="map"></div>
+
     
-    <div class="geocoder-container" id="geocoder">
+    <div class="side-tabs">
+        <button id="menu-toggle" class="tab-button" data-tooltip="Expandir/Ocultar">☰</button>
         
-        <div class="checkbox-container">
-            <label for="toggle-geojson">Mostrar puntos</label> <!-- Etiqueta para el checkbox -->  
-            <input type="checkbox" id="toggle-geojson" checked> <!-- Checkbox para mostrar/ocultar la capa GeoJSON -->
+        
+        <button class="tab-button" onclick="showTab('description')" data-tooltip="Geodata Urbana">
+            <img src="https://i.imgur.com/dO24jzX.png" alt="Geodata Urbana" class="maki-icon" />
+        </button>
+        <button class="tab-button" onclick="showTab('how-to')" data-tooltip="¿Cómo usar?">
+            <img src="https://cdn.jsdelivr.net/gh/mapbox/maki@latest/icons/caution.svg" alt="¿Cómo usar?" class="maki-icon" />
+        </button>
+        <button class="tab-button" onclick="showTab('property-info')" data-tooltip="Inmueble">
+            <img src="https://cdn.jsdelivr.net/gh/mapbox/maki@latest/icons/home.svg" alt="Inmueble" class="maki-icon" />
+        </button>
+        <button class="tab-button" onclick="showTab('nearby-services')" data-tooltip="Servicios cercanos">
+            <img src="https://cdn.jsdelivr.net/gh/mapbox/maki@latest/icons/landuse.svg" alt="Servicios cercanos" class="maki-icon" />
+        </button>
+        <button class="tab-button" onclick="showTab('download')" data-tooltip="Descargar">
+            <img src="https://cdn.jsdelivr.net/gh/mapbox/maki@latest/icons/landmark-JP.svg" alt="Descargar" class="maki-icon" />
+        </button>
+    </div>
+    <div id="legend" class="map-legend"></div>
+    <div class="info-container" id="info-container">  
+
+        <!-- Contenido de las pestañas -->
+        <div id="how-to" class="tab-content">
+            <p>
+                Para comenzar haz click en cualquiera de los <strong>inmuebles residenciales en venta</strong> recopilados 
+                de distintas páginas de promoción de inmuebles durante el primer semestre del año 2024. 
+            </p>
+            <p>
+                Después de hacer click y acercarte al punto de interés puedes revisar las información del inmueble en la pestaña <strong>'Inmueble'</strong> y <strong>'Servicios cercanos'</strong>.
+            </p>
+            <p>
+                Finalmente en la pestaña <strong>'Descargar'</strong> puedes descargar los inmuebles que se encuentran en la ventana en formato GeoJSON.
+            </p>
         </div>
         
-    </div>
-    
-    <div class="info-container">
-        
-    <h2>Inmuebles residenciales en venta</h2>  <!-- Subtítulo del recuadro -->
-        
-    <div class="dropdown-container">
-        <label for="filter-cve_ent" style="margin-right: 10px;">Selecciona una entidad:</label>
-        <select id="filter-cve_ent">
-            <option value="">Todos</option>
-            <option value="09">Ciudad de México</option>
-            <option value="15">Estado de México</option>
-            <option value="17">Morelos</option>
-            <!-- Agrega más opciones según los valores de CVE_ENT -->
-        </select>
-    </div><br>
-        
-     <!-- Barra de pestañas -->
-    <div class="tabs">
-        <button class="tab-button" onclick="showTab('description')">Geodata Urbana</button>
-        <button class="tab-button" onclick="showTab('property-info')">Inmueble</button>
-        <button class="tab-button" onclick="showTab('nearby-services')">Servicios cercanos</button>
-        <button class="tab-button" onclick="showTab('download')">Descargar</button>
-    </div>
-
-    <!-- Contenido de las pestañas -->
-    <div id="description" class="tab-content">
-        <p>
-            La información mostrada en este mapa corresponde a <strong>inmuebles residenciales en venta</strong> recopilados 
-            de distintas páginas de promoción de inmuebles durante el primer semestre del año 2024. 
-        </p>
-        El objetivo en <a href="http://www.geo-data-urbana.com"><strong>Geodata Urbana</strong></a> es crear una base de datos abiertos 
-        donde analistas espaciales o especialistas en sistemas de información geográfica puedan acceder 
-        a esta información de manera <strong>rápida y sencilla</strong> para potenciar los análisis realizados en el entorno urbano.
-        <p></p>
-        <p>
-            Esta base de datos puede ser utilizada para diversos fines, especialmente en el ámbito de la investigación y desarrollo urbano, 
-            donde se pueden realizar estudios sobre tendencias del mercado inmobiliario, análisis de accesibilidad y 
-            localización, evaluación de precios y superficies, y mucho más.
-        </p>
-    </div>
-
-    <div id="property-info" class="tab-content" style="display:none;"></div>
-
-    <div id="nearby-services" class="tab-content" style="display:none;"></div>
-
-    <div id="download" class="tab-content">
-        <p>
-            Aquí podrás descargar en formato GeoJSON los inmuebles en venta visibles en la ventana. 
-        </p>
-        <div class="info-download-container" id ="info">
-            <button id="download-button">Descargar GeoJSON</button> <!-- Botón para descargar datos -->
+        <!-- Contenido de las pestañas -->
+        <div id="description" class="tab-content">
+            <p>
+                La información mostrada en este mapa corresponde a <strong>inmuebles residenciales en venta</strong> recopilados 
+                de distintas páginas de promoción de inmuebles durante el primer semestre del año 2024. 
+            </p>
+            <p>
+                El objetivo en <a href="http://www.geo-data-urbana.com"><strong>Geodata Urbana</strong></a> es crear una base de datos abiertos 
+                donde analistas espaciales o especialistas en sistemas de información geográfica puedan acceder 
+                a esta información de manera <strong>rápida y sencilla</strong> para potenciar los análisis realizados en el entorno urbano.
+            </p>
+            <p>
+                Esta base de datos puede ser utilizada para diversos fines, especialmente en el ámbito de la investigación y desarrollo urbano, 
+                donde se pueden realizar estudios sobre tendencias del mercado inmobiliario, análisis de accesibilidad y 
+                localización, evaluación de precios y superficies, y mucho más.
+            </p>
         </div>
-    </div>
+
+        <div id="property-info" class="tab-content" style="display:none;"></div>
+        <div id="nearby-services" class="tab-content" style="display:none;"></div>
+        <div id="download" class="tab-content">
+            <p>
+                Aquí podrás descargar en formato GeoJSON los inmuebles en venta visibles en la ventana. 
+            </p>
+            <div class="filter-button" >
+                <label for="filter-cve_ent" >Selecciona una entidad:</label>
+                <select id="filter-cve_ent"style="margin-top: 10px;">
+                    <option value="">Todos</option>
+                    <option value="09">Ciudad de México</option>
+                    <option value="15">Estado de México</option>
+                    <option value="17">Morelos</option>
+                    <!-- Agrega más opciones según los valores de CVE_ENT -->
+                </select>
+            </div>
+            <div class="info-download-container" id ="info">
+                <button id="download-button" >Descargar GeoJSON</button> <!-- Botón para descargar datos -->
+            </div>
+        </div>
+
+        <div id="service-info-container" class="service-info-container">
+            <button id="toggle-button">Ocultar servicios</button>    
+            <div id="service-info" class="service-info"></div> 
+        </div>
+
+    </div>   
     
-    <div id="service-info-container" class="service-info-container">
-        <button id="toggle-button">Ocultar servicios</button>    
-        <div id="service-info" class="service-info"></div> 
-    </div>
-  
+    
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>  
     <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
     <script src="https://unpkg.com/@turf/turf/turf.min.js"></script> <!-- Agregar Turf.js -->
@@ -538,6 +719,8 @@
             });
             /* */
  
+            
+            
              map.on('sourcedata', (e) => {
                 if (e.sourceId === 'tileset-source' && e.isSourceLoaded) {
                     const features = map.querySourceFeatures('tileset-source', { sourceLayer: 'IINM_RESIDENCIALES_VENTA-3dw8zx' });
@@ -649,7 +832,7 @@
                         });
                         map.fitBounds(bounds, {
                             padding: {
-                                top: 100,
+                                top: 150,
                                 bottom: 100,
                                 left: 250,  // Reduce este valor para desplazar más hacia la derecha
                                 right: 0  // Incrementa este valor para desplazar más hacia la derecha
@@ -752,7 +935,7 @@
                                         .popup-content {
                                             padding: 5px 15px;
                                             font-family: 'Montserrat', sans-serif;
-                                            font-size: 12px;
+                                            font-size: 14px;
                                             color: #333;
                                             line-height: 2; /* Espaciado entre filas */
                                             text-align: jusitfy;
@@ -810,13 +993,50 @@
             });
             
             
-            const toggleControl = document.getElementById('toggle-geojson');
-            toggleControl.addEventListener('change', (e) => {
-                if (e.target.checked) {
-                    map.setLayoutProperty('tileset-layer', 'visibility', 'visible');
-                } else {
-                    map.setLayoutProperty('tileset-layer', 'visibility', 'none');
+            function showTooltip(text) {
+                const tooltip = document.getElementById('tooltip');
+                tooltip.innerText = text; // Asigna el texto del tooltip
+                tooltip.style.display = 'block'; // Muestra el tooltip
+
+                // Coloca el tooltip en la posición del mouse
+                document.onmousemove = function(e) {
+                    tooltip.style.left = e.pageX + 10 + 'px'; // Ajusta la posición
+                    tooltip.style.top = e.pageY + 10 + 'px'; // Ajusta la posición
+                };
+            }
+
+            function hideTooltip() {
+                const tooltip = document.getElementById('tooltip');
+                tooltip.style.display = 'none'; // Oculta el tooltip
+                document.onmousemove = null; // Limpia el evento de movimiento del mouse
+            }
+            
+            
+            var menuToggle = document.getElementById('menu-toggle');
+            var infoContainer = document.querySelector('.info-container');
+
+            // Inicializa el estado de visibilidad
+            infoContainer.style.display = 'none'; // Asegúrate de que comience oculto
+
+            // Función para desplegar/ocultar los botones y el info-container
+            menuToggle.addEventListener('click', function () {
+                var buttons = document.querySelectorAll('.side-tabs .tab-button:not(#menu-toggle)');
+                buttons.forEach(function (button) {
+                    button.style.display = button.style.display === 'none' || button.style.display === '' ? 'block' : 'none'; // Alternar visibilidad
+                });
+
+                // Ocultar el info-container al hacer clic en el menu-toggle
+                if (infoContainer.style.display === 'block') {
+                    infoContainer.style.display = 'none'; // Ocultar el info-container
                 }
+            });
+
+            // Función para mostrar el info-container al hacer clic en los side-tabs
+            var sideTabs = document.querySelectorAll('.side-tabs .tab-button:not(#menu-toggle)');
+            sideTabs.forEach(function (tab) {
+                tab.addEventListener('click', function () {
+                    infoContainer.style.display = 'block'; // Mostrar el info-container
+                });
             });
             
             let activeTab = null; // Variable para rastrear la pestaña activa
@@ -842,6 +1062,35 @@
                 }
             }
             
+            var buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    // Eliminar la clase 'active' de todos los botones
+                    buttons.forEach(btn => btn.classList.remove('active'));
+                    // Agregar la clase 'active' al botón clicado
+                    this.classList.add('active');
+                });
+            });
+            
+            document.getElementById('menu-toggle').addEventListener('click', function() {
+                const sideTabs = document.getElementById('side-tabs');
+                const buttons = document.querySelectorAll('.side-tabs .tab-button:not(#menu-toggle)');
+
+                if (sideTabs.classList.contains('expanded')) {
+                    sideTabs.classList.remove('expanded');
+                    buttons.forEach(button => {
+                        button.style.display = 'none';
+                    });
+                } else {
+                    sideTabs.classList.add('expanded');
+                    buttons.forEach(button => {
+                        button.style.display = 'block';
+                    });
+                }
+            });
+            
+
+            
             // Añadir este bloque de código para manejar el evento click en la pestaña "Descripción"
             document.querySelector(`.tab-button[onclick="showTab('description')"]`).addEventListener('click', () => {
                 showTab('description');
@@ -855,6 +1104,11 @@
             // Añadir este bloque de código para manejar el evento click en la pestaña "Información del inmueble"
             document.querySelector(`.tab-button[onclick="showTab('download')"]`).addEventListener('click', () => {
                 showTab('download');
+            });
+            
+            // Añadir este bloque de código para manejar el evento click en la pestaña "Información del inmueble"
+            document.querySelector(`.tab-button[onclick="showTab('how-to')"]`).addEventListener('click', () => {
+                showTab('how-to');
             });
 
             
@@ -897,7 +1151,7 @@
                     <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; font-family: 'Montserrat', sans-serif;">
 
                         <!-- Título descriptivo -->
-                        <strong style="font-size: 12px; line-height: 1;">Selecciona el método de transporte y la distancia.</strong>
+                        <strong style="font-size: 14px; line-height: 1;">Selecciona el método de transporte y la distancia.</strong>
 
                         <!-- Contenedor de método de transporte y distancia -->
                         <div style="display: flex; flex-direction: row; gap: 10px; align-items: center;">
@@ -1010,7 +1264,7 @@
                             });
                             map.fitBounds(bounds, {
                                 padding: {
-                                    top: 100,
+                                    top: 150,
                                     bottom: 100,
                                     left: 250,  // Reduce este valor para desplazar más hacia la derecha
                                     right: 0  // Incrementa este valor para desplazar más hacia la derecha
@@ -1076,8 +1330,10 @@
                                         paint: {'circle-radius': 4, 'circle-color': '#f50000'}
                                     });
                                 }
+                                // Llama a esta función después de cargar el mapa o cuando se cambien las capas
                                 
                                 map.once('idle', () => {
+                                    
                                     const abarrotesCount = map.queryRenderedFeatures({
                                         layers: ['abarrotes-layer']
                                     }).filter(feature => turf.booleanContains(isocronaGeometry, feature.geometry)).length;
@@ -1121,6 +1377,8 @@
                 });
             });
             
+            map.on('idle', updateLegend);
+            
             function handleServiceClick(serviceType, serviceLayer) {
                 document.getElementById(serviceType).addEventListener('click', () => {
                     const serviceInfo = document.getElementById('service-info');
@@ -1143,7 +1401,31 @@
                 });
             }
             
-            
+            function updateLegend() {
+                const legend = document.getElementById('legend');
+                legend.innerHTML = ''; // Limpiar contenido previo
+
+                // Añadir simbología para cada capa activa
+                if (map.getLayer('selected-point-layer')) {
+                    legend.innerHTML += '<div><span style="background-color: #00ffff; width: 15px; height: 15px; display: inline-block; margin-right: 5px;"></span>Punto seleccionado</div>';
+                }
+                if (map.getLayer('filtered-abarrotes-layer')) {
+                    legend.innerHTML += '<div><span style="background-color: #ffd907; width: 15px; height: 15px; display: inline-block; margin-right: 5px;"></span>Abarrotes</div>';
+                }
+                if (map.getLayer('filtered-escuelas-layer')) {
+                    legend.innerHTML += '<div><span style="background-color: #144afc; width: 15px; height: 15px; display: inline-block; margin-right: 5px;"></span>Escuelas</div>';
+                }
+                if (map.getLayer('filtered-salud-layer')) {
+                    legend.innerHTML += '<div><span style="background-color: #f50000; width: 15px; height: 15px; display: inline-block; margin-right: 5px;"></span>Salud</div>';
+                }
+                if (map.getLayer('isochrone-layer')) {
+                    legend.innerHTML += '<div><span style="background-color: grey; width: 15px; height: 15px; display: inline-block; margin-right: 5px;"></span>Isocrona</div>';
+                }
+                if (map.getLayer('isochrone-line-layer')) {
+                    legend.innerHTML += '<div><span style="background-color: black; width: 15px; height: 2px; display: inline-block; margin-right: 5px;"></span>Línea Isocrona</div>';
+                }
+            }
+
             
             function createServiceTable(serviceDataArray) {
                 const table = document.createElement('table');
@@ -1179,9 +1461,6 @@
                 return table;
             }
 
-
-
-            
             //////////////////////////////////////////////////////////////////////////////////////////
             
             document.addEventListener('DOMContentLoaded', (event) => {
